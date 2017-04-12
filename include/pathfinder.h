@@ -17,16 +17,18 @@ class Pathfinder
         void    update();
 
         void    setSearchAlgorithm(bs::SearchAlgorithm sa);
-        void    calculatePath();
+        void    calculatePath(bs::SearchAlgorithm sa);
 
         void    breadthSearch();
+
+        void    printPath();
 
     private:
         void    initializeSearch();
         bool    addNode(sf::Vector2i gridPos, Node *parent);
 
     private:
-        Map                             mMap;
+        Map                             &mMap;
         bs::SearchAlgorithm             mCurrentSearchAlgorithm;
 
         // Variables used in the algorithms
@@ -35,7 +37,7 @@ class Pathfinder
         // mNodes = vector to store the nodes already visited
         std::vector<std::vector<bool> > mVisited;
         std::list<Node>                 mOpen;
-        std::vector<Node>               mNodes;
+        std::list<Node>                 mNodes;
         sf::Vector2i                    mStartPosition;
         sf::Vector2i                    mEndPosition;
         sf::Vector2i                    mGridSize;

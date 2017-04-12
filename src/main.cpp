@@ -14,6 +14,7 @@
 #include <SFML/Graphics.hpp>
 
 #include "map.h"
+#include "pathfinder.h"
 #include "util.h"
 
 #define BLOCK_SIZE 16
@@ -31,7 +32,11 @@ int main()
 
     int sizeWindowY = Y_MAP_OFFSET + ( (gridSize.y+1) * BLOCK_GAP) + (BLOCK_SIZE * gridSize.y);
     int sizeWindowX = X_MAP_OFFSET + ( (gridSize.x+1) * BLOCK_GAP) + (BLOCK_SIZE * gridSize.x);
-    sf::RenderWindow window(sf::VideoMode(sizeWindowX, sizeWindowY), "SFML works!");
+    
+    sf::ContextSettings settings;
+    settings.antialiasingLevel = 8;
+    sf::RenderWindow window(sf::VideoMode(sizeWindowX, sizeWindowY), "Blind Search", 
+            sf::Style::Default, settings);
 
     // Variables to calculate the FPS
     sf::Clock clock;
@@ -50,6 +55,7 @@ int main()
     textSelectedSearch.setCharacterSize(FONT_SIZE);
     textSelectedSearch.setPosition(sf::Vector2f(2,22));
 
+    Pathfinder pathfinder(m);
     bs::SearchAlgorithm selectedSearch = bs::SearchAlgorithm::None;
 
     while (window.isOpen())
@@ -81,6 +87,9 @@ int main()
                         textSelectedSearch.setString("Uniform Cost Search");
                         selectedSearch = bs::SearchAlgorithm::UCS;
                         break;
+                    case sf::Keyboard::Return:
+                        pathfinder.calculatePath(selectedSearch);
+                        break;
                 }
             }
         }
@@ -94,8 +103,9 @@ int main()
         textFps.setString(std::string("FPS: " + std::to_string(fps)));
 
         window.clear();
-        m.draw(&window);
         window.draw(textFps);
+        m.draw(&window);
+        pathfinder.draw(&window);
         window.draw(textSelectedSearch);
         window.display();
     }

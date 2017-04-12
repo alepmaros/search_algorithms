@@ -187,3 +187,13 @@ sf::Vector2i Map::getGridSize() const
 {
     return mGridSize;
 }
+
+float Map::getBlockGap() const
+{
+    return mBlockGap;
+}
+
+float Map::getBlockSize() const
+{
+    return mBlockSize;
+}

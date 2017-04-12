@@ -29,6 +29,8 @@ class Map
         sf::Vector2i    getGridSize() const;
         sf::Vector2i    getStartPosition() const;
         sf::Vector2i    getEndPosition() const;
+        float           getBlockSize() const;
+        float           getBlockGap() const;
 
     private:
         void            setStartPosition(int x, int j);
