@@ -25,7 +25,7 @@ class Map
         void            markMap(int x, int y, sf::Mouse::Button buttonPressed);
         sf::Vector2i    getIndexByPosition(int x, int y);
 
-        sf::Vector2i    getGridSize();
+        sf::Vector2i    getGridSize() const;
 
     private:
         void            setStartPosition(int x, int j);

@@ -95,7 +95,7 @@ void Map::draw(sf::RenderWindow* window)
     window->draw(mEndRectangle);
 }
 
-sf::Vector2i Map::getGridSize()
+sf::Vector2i Map::getGridSize() const
 {
     return mGridSize;
 }

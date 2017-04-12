@@ -5,10 +5,10 @@ IDIR = include
 ODIR = obj
 SDIR = src
 
-_DEPS = map.h util.h
+_DEPS = map.h node.h util.h
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
-_OBJ = map.o
+_OBJ = map.o node.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 $(ODIR)/%.o: $(SDIR)/%.cpp $(DEPS)
