@@ -7,17 +7,20 @@
 
 class Node
 {
-    Node(sf::Vector2i gridPos);
+    public:
+        Node(sf::Vector2i gridPos);
+        Node(sf::Vector2i gridPos, int cost);
 
-    void    setParent(Node parent);
-    
-    Node            getParent() const;
-    sf::Vector2i    getGridPos() const;
-    int             getCost() const;
+        void            setParent(Node *parent);
+
+        Node*           getParent() const;
+        sf::Vector2i    getGridPos() const;
+        int             getCost() const;
 
     private:
-        Node            *parent;
+        Node            *mParent;
         sf::Vector2i    mGridPos;
+        int             mCost;
 };
 
 #endif

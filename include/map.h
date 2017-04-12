@@ -23,9 +23,12 @@ class Map
 
         // Mark start and end positions
         void            markMap(int x, int y, sf::Mouse::Button buttonPressed);
+
         sf::Vector2i    getIndexByPosition(int x, int y);
 
         sf::Vector2i    getGridSize() const;
+        sf::Vector2i    getStartPosition() const;
+        sf::Vector2i    getEndPosition() const;
 
     private:
         void            setStartPosition(int x, int j);
@@ -33,12 +36,13 @@ class Map
         
     public:
         std::vector<std::vector<sf::RectangleShape> > mGrid;
-        sf::Vector2i mStartPosition;
 
+    private:
         // Map offset
         sf::Vector2f mOffset;
         sf::Vector2i mGridSize;
 
+        sf::Vector2i mStartPosition;
         sf::Vector2i mEndPosition;
         sf::RectangleShape mStartRectangle;
         sf::RectangleShape mEndRectangle;

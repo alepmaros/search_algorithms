@@ -95,11 +95,6 @@ void Map::draw(sf::RenderWindow* window)
     window->draw(mEndRectangle);
 }
 
-sf::Vector2i Map::getGridSize() const
-{
-    return mGridSize;
-}
-
 // x and y represent the index of the vector
 void Map::setStartPosition(int x, int y)
 {
@@ -176,4 +171,19 @@ void Map::markMap(int x, int y, sf::Mouse::Button buttonPressed)
         if (mStartPosition.x != index.x || mStartPosition.y != index.y)
             setEndPosition(index.x, index.y);
     }
+}
+
+sf::Vector2i Map::getStartPosition() const
+{
+    return mStartPosition;
+}
+
+sf::Vector2i Map::getEndPosition() const
+{
+    return mEndPosition;
+}
+
+sf::Vector2i Map::getGridSize() const
+{
+    return mGridSize;
 }

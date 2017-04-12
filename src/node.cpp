@@ -3,26 +3,32 @@
 Node::Node(sf::Vector2i gridPos)
     : mGridPos(gridPos)
 {
-    parent = nullptr;
-
+    mParent = nullptr;
+    mCost = 0;
 }
 
-void Node::setParent(Node parent)
+Node::Node(sf::Vector2i gridPos, int cost)
+    : Node(gridPos)
 {
-
+    mCost = cost;
 }
-    
-Node Node::getParent() const
-{
 
+void Node::setParent(Node *parent)
+{
+    mParent = parent;
+}
+
+Node* Node::getParent() const
+{
+    return mParent;
 }
 
 sf::Vector2i Node::getGridPos() const
 {
-
+    return mGridPos;
 }
 
 int Node::getCost() const
 {
-
+    return mCost;
 }
