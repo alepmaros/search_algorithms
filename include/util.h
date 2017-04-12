@@ -8,7 +8,18 @@ namespace bs
         Grass,
         Hill,
         Swamp,
-        Mountain
+        Fire
+    };
+
+    // BS = Breadth Search
+    // DS = Depth Search
+    // UCS = Uniform Cost Search
+    enum SearchAlgorithm
+    {
+        None,
+        BS,
+        DS,
+        UCS
     };
 }
 

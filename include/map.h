@@ -18,22 +18,33 @@ class Map
                 Map(std::string file, sf::Vector2f offset, float blockSize,
                         float blockGap);
 
-        void    update();
-        void    draw(sf::RenderWindow* window);
+        void            update();
+        void            draw(sf::RenderWindow* window);
+
+        // Mark start and end positions
+        void            markMap(int x, int y, sf::Mouse::Button buttonPressed);
+        sf::Vector2i    getIndexByPosition(int x, int y);
+
+        sf::Vector2i    getGridSize();
+
+    private:
+        void            setStartPosition(int x, int j);
+        void            setEndPosition(int x, int j);
         
     public:
         std::vector<std::vector<sf::RectangleShape> > mGrid;
+        sf::Vector2i mStartPosition;
 
-    private:
         // Map offset
         sf::Vector2f mOffset;
+        sf::Vector2i mGridSize;
+
+        sf::Vector2i mEndPosition;
+        sf::RectangleShape mStartRectangle;
+        sf::RectangleShape mEndRectangle;
 
         float mBlockSize;
         float mBlockGap;
-        
-        int mGridWidth;
-        int mGridHeight;
-
 };
 
 #endif
