@@ -5,7 +5,7 @@ IDIR = include
 ODIR = obj
 SDIR = src
 
-_DEPS = map.h
+_DEPS = map.h util.h
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
 _OBJ = map.o

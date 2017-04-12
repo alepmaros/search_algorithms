@@ -15,11 +15,17 @@
 
 #include "map.h"
 
+#define BLOCK_SIZE 15
+#define BLOCK_GAP 1
+#define X_MAP_OFFSET 0
+#define Y_MAP_OFFSET 0
+
 int main()
 {
-    Map m("a");
+    Map m("robo_ambiente.txt", sf::Vector2f(X_MAP_OFFSET, Y_MAP_OFFSET), BLOCK_SIZE,
+            BLOCK_GAP);
 
-    sf::RenderWindow window(sf::VideoMode(200, 200), "SFML works!");
+    sf::RenderWindow window(sf::VideoMode(800, 800), "SFML works!");
 
 
     while (window.isOpen())
@@ -32,6 +38,7 @@ int main()
         }
 
         window.clear();
+        m.draw(&window);
         window.display();
     }
 

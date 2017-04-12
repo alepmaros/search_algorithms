@@ -11,30 +11,25 @@
 #include <string>
 #include <SFML/Graphics.hpp>
 
+
 class Map
 {
     public:
-        enum FloorType
-        {
-            None,
-            Grass,
-            Hill,
-            Swamp,
-            Mountains
-        };
-
-    public:
-                Map(std::string file);
+                Map(std::string file, sf::Vector2f offset, float blockSize,
+                        float blockGap);
 
         void    update();
         void    draw(sf::RenderWindow* window);
         
     public:
-        std::vector<std::vector<FloorType> > mGrid;
+        std::vector<std::vector<sf::RectangleShape> > mGrid;
 
     private:
-        float xOffset;
-        float yOffset;
+        // Map offset
+        sf::Vector2f mOffset;
+
+        float mBlockSize;
+        float mBlockGap;
         
         int mGridWidth;
         int mGridHeight;
