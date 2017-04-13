@@ -21,7 +21,7 @@ class Pathfinder
 
         void    breadthSearch();
 
-        void    printPath();
+        void    makePath();
 
     private:
         void    initializeSearch();

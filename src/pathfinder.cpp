@@ -125,9 +125,9 @@ void Pathfinder::breadthSearch()
         Node e = mOpen.back();
         mOpen.pop_back();
         mNodes.push_back(std::move(e));
+        makePath();
     }
     
-    printPath();
 }
 
 // addNode will return true if the node that it is adding is the destination
@@ -172,7 +172,7 @@ void Pathfinder::initializeSearch()
     }
 }
 
-void Pathfinder::printPath()
+void Pathfinder::makePath()
 {
     float blockGap = mMap.getBlockGap();
     float blockSize = mMap.getBlockSize();
