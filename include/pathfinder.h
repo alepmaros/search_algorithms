@@ -19,13 +19,18 @@ class Pathfinder
         void    setSearchAlgorithm(bs::SearchAlgorithm sa);
         void    calculatePath(bs::SearchAlgorithm sa);
 
-        void    breadthSearch();
 
-        void    makePath();
+        int     makePath(Node *dest);
 
     private:
         void    initializeSearch();
-        bool    addNode(sf::Vector2i gridPos, Node *parent);
+        void    printStatistics(std::string searchAlgo);
+
+        void    breadthSearch();
+        bool    addNodeBreadth(sf::Vector2i gridPos, Node *parent);
+
+        void    depthSearch();
+        bool    addNodeDepth(sf::Vector2i gridPos, Node *parent);
 
     private:
         Map                             &mMap;
@@ -42,9 +47,13 @@ class Pathfinder
         sf::Vector2i                    mEndPosition;
         sf::Vector2i                    mGridSize;
 
+        // For visualization of the algorithm
+        sf::Clock                       mAnimationTimer;
+        bool                            foundPath;
         std::vector<sf::CircleShape>    mPoints;
         std::vector<sf::RectangleShape> mLines;
         std::vector<sf::RectangleShape> mNodesVisited;
+        int                             mCellsOnPath;
 
         // Control Variables
 

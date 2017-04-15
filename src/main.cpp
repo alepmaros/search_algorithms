@@ -38,6 +38,9 @@ int main()
     sf::RenderWindow window(sf::VideoMode(sizeWindowX, sizeWindowY), "Blind Search", 
             sf::Style::Default, settings);
 
+    // remove this later
+    //window.setFramerateLimit(60);
+
     // Variables to calculate the FPS
     sf::Clock clock;
     float lastTime;
@@ -93,6 +96,8 @@ int main()
                 }
             }
         }
+
+        pathfinder.update();
 
         // Calculate Frames per Second
         float currentTime = clock.restart().asSeconds();
