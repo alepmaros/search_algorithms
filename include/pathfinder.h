@@ -2,7 +2,9 @@
 #define PATHFINDER_H
 
 #include <SFML/Graphics.hpp>
+
 #include <list>
+#include <deque>
 
 #include "util.h"
 #include "node.h"
@@ -19,12 +21,12 @@ class Pathfinder
         void    setSearchAlgorithm(bs::SearchAlgorithm sa);
         void    calculatePath(bs::SearchAlgorithm sa);
 
-
-        int     makePath(Node *dest);
+        std::pair<int,int>  makePath(Node *dest);
 
     private:
         void    initializeSearch();
-        void    printStatistics(std::string searchAlgo);
+        void    printStatistics(std::string searchAlgo, int numCells,
+                int cost);
 
         void    breadthSearch();
         bool    addNodeBreadth(sf::Vector2i gridPos, Node *parent);
@@ -41,7 +43,7 @@ class Pathfinder
         // mOpen = list of nodes yet to be visited
         // mNodes = vector to store the nodes already visited
         std::vector<std::vector<bool> > mVisited;
-        std::list<Node>                 mOpen;
+        std::deque<Node>                mOpen;
         std::list<Node>                 mNodes;
         sf::Vector2i                    mStartPosition;
         sf::Vector2i                    mEndPosition;

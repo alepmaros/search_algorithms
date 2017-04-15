@@ -1,6 +1,7 @@
 #include "pathfinder.h"
 
 #include <iostream>
+#include <algorithm>
 
 Pathfinder::Pathfinder(Map &map)
     : mMap(map)
@@ -110,9 +111,8 @@ void Pathfinder::initializeSearch()
 
     // Add startPosition to node to be visited list
     mOpen.clear();
-    mOpen.push_back(Node(mStartPosition));
-
     mNodes.clear();
+    mOpen.push_back(Node(mStartPosition));
 
     // Clear visited grid
     for (int i = 0; i < mGridSize.y; i++)
@@ -124,7 +124,7 @@ void Pathfinder::initializeSearch()
     }
 }
 
-void Pathfinder::printStatistics(std::string searchAlgo)
+void Pathfinder::printStatistics(std::string searchAlgo, int numCells, int cost)
 {
     std::cout << "----- " << searchAlgo << " Search Statistics -----" << std::endl;
     std::cout << "Start position: (" << mStartPosition.x << "," << 
@@ -132,7 +132,8 @@ void Pathfinder::printStatistics(std::string searchAlgo)
     std::cout << "End position: (" << mEndPosition.x << "," << 
         mEndPosition.y << ")" << std::endl;
     std::cout << "Number of opened nodes: " << mNodes.size() << std::endl;
-    std::cout << "Number of cells on path: " << mCellsOnPath << std::endl;
+    std::cout << "Number of cells on path: " << numCells << std::endl;
+    std::cout << "Cost :" << cost << std::endl;
     std::cout << "----- Breadth Search Statistics -----" << std::endl << std::endl;
 }
 
@@ -203,8 +204,8 @@ void Pathfinder::breadthSearch()
         mNodes.push_back(std::move(mOpen.back()));
         mOpen.pop_back();
         mNodesVisited.clear();
-        mCellsOnPath = makePath(&mNodes.back());
-        printStatistics("Breadth");
+        std::pair<int, int> stats = makePath(&mNodes.back());
+        printStatistics("Breadth", stats.first, stats.second);
     }
     
 }
@@ -235,20 +236,22 @@ bool Pathfinder::addNodeBreadth(sf::Vector2i gridPos, Node *parent)
 
 void Pathfinder::depthSearch()
 {
-    if (mAnimationTimer.getElapsedTime().asMilliseconds() < 1)
+    if (mAnimationTimer.getElapsedTime().asMilliseconds() < 50)
         return;
 
     while( !mOpen.empty() )
     {
-        mNodes.push_back(mOpen.front());
+        mNodes.push_back(std::move(mOpen.front()));
         mOpen.pop_front();
         Node *pe = &mNodes.back();
 
         sf::Vector2i gridPos = mNodes.back().getGridPos();
 
+        int nNodesOpened = 0;
         // North
         if (gridPos.y - 1 >= 0)
         {
+            nNodesOpened++;
             if (addNodeDepth(sf::Vector2i(gridPos.x, gridPos.y-1), pe))
             {
                break; 
@@ -258,6 +261,7 @@ void Pathfinder::depthSearch()
         // East
         if (gridPos.x + 1 < mGridSize.x)
         {
+            nNodesOpened++;
             if (addNodeDepth(sf::Vector2i(gridPos.x+1, gridPos.y), pe))
             {
                break; 
@@ -267,6 +271,7 @@ void Pathfinder::depthSearch()
         // South
         if (gridPos.y + 1 < mGridSize.y)
         {
+            nNodesOpened++;
             if (addNodeDepth(sf::Vector2i(gridPos.x, gridPos.y+1), pe))
             {
                break; 
@@ -276,11 +281,14 @@ void Pathfinder::depthSearch()
         // West
         if (gridPos.x - 1 >= 0)
         {
+            nNodesOpened++;
             if (addNodeDepth(sf::Vector2i(gridPos.x-1, gridPos.y), pe))
             {
                break; 
             }
         }
+
+        std::reverse(mOpen.begin(), mOpen.begin()+nNodesOpened);
 
         // This is used so I can draw the nodes while updating. It does not 
         // belong to the search algorithm but it is a silly hack so I can draw
@@ -301,8 +309,8 @@ void Pathfinder::depthSearch()
         mOpen.pop_back();
 
         mNodesVisited.clear();
-        mCellsOnPath = makePath(&mNodes.back());
-        printStatistics("Depth");
+        std::pair<int,int> stats = makePath(&mNodes.back());
+        printStatistics("Depth", stats.first, stats.second);
     }
     
 }
@@ -332,9 +340,11 @@ bool Pathfinder::addNodeDepth(sf::Vector2i gridPos, Node *parent)
 }
 
 
-int Pathfinder::makePath(Node *dest)
+std::pair<int,int> Pathfinder::makePath(Node *dest)
 {
     int cells = 1;
+    int cost = 0;
+
     float blockGap = mMap.getBlockGap();
     float blockSize = mMap.getBlockSize();
     float lineThickness = 5.0;
@@ -347,6 +357,7 @@ int Pathfinder::makePath(Node *dest)
     while(n->getParent() != nullptr)
     {
         cells++;
+        cost += n->getCost();
 
         n_next = n->getParent();
 
@@ -403,5 +414,5 @@ int Pathfinder::makePath(Node *dest)
     hex.setPosition(middleX, middleY);
     mPoints.push_back(hex);
    
-    return cells;
+    return std::make_pair(cells, cost);
 }
