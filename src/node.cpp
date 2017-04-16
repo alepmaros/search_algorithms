@@ -1,16 +1,38 @@
 #include "node.h"
 
-Node::Node(sf::Vector2i gridPos)
+Node::Node(sf::Vector2i gridPos, bs::FloorType type, sf::Vector2f blockPosition,
+        sf::Vector2f size)
     : mGridPos(gridPos)
+      , mType(type)
 {
     mParent = nullptr;
-    mCost = 0;
+
+    mShape.setPosition(blockPosition);
+    mShape.setSize(size);
+    switch(type)
+    {
+        case bs::FloorType::Grass:
+            mShape.setFillColor(sf::Color::Green);
+            mCost = 1;
+            break;
+        case bs::FloorType::Hill:
+            mShape.setFillColor(sf::Color(128, 73, 2));
+            mCost = 5;
+            break;
+        case bs::FloorType::Swamp:
+            mShape.setFillColor(sf::Color(32, 63, 255));
+            mCost = 10;
+            break;
+        case bs::FloorType::Fire:
+            mShape.setFillColor(sf::Color(255, 57, 4));
+            mCost = 15;
+            break;
+    }
 }
 
-Node::Node(sf::Vector2i gridPos, int cost)
-    : Node(gridPos)
+void Node::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-    mCost = cost;
+    target.draw(mShape);
 }
 
 void Node::setParent(Node *parent)
@@ -31,4 +53,9 @@ sf::Vector2i Node::getGridPos() const
 int Node::getCost() const
 {
     return mCost;
+}
+
+sf::Vector2f Node::getPosition() const
+{
+    return mShape.getPosition();
 }

@@ -98,21 +98,22 @@ void Pathfinder::calculatePath(bs::SearchAlgorithm sa)
 
 void Pathfinder::initializeSearch()
 {
+    mStartPosition = mMap.getStartPosition();
+    mEndPosition = mMap.getEndPosition();
+    mGridSize = mMap.getGridSize();
+
     mLines.clear();
     mPoints.clear();
     mNodesVisited.clear();
     foundPath = false;
-    mStartPosition = mMap.getStartPosition();
-    mEndPosition = mMap.getEndPosition();
-    mGridSize = mMap.getGridSize();
+    mNumNodesOpened = 0;
     
     //std::cout << mStartPosition.x << " " << mStartPosition.y << std::endl;
     //std::cout << mEndPosition.x << " " << mEndPosition.y << std::endl;
 
     // Add startPosition to node to be visited list
     mOpen.clear();
-    mNodes.clear();
-    mOpen.push_back(Node(mStartPosition));
+    mOpen.push_back(&mMap.mGrid[mStartPosition.y][mStartPosition.x]);
 
     // Clear visited grid
     for (int i = 0; i < mGridSize.y; i++)
@@ -120,8 +121,10 @@ void Pathfinder::initializeSearch()
         for (int j = 0; j < mGridSize.x; j++)
         {
             mVisited[i][j] = false;
+            mMap.mGrid[i][j].setParent(nullptr);
         }
     }
+    mVisited[mStartPosition.y][mStartPosition.x] = true;
 }
 
 void Pathfinder::printStatistics(std::string searchAlgo, int numCells, int cost)
@@ -131,10 +134,10 @@ void Pathfinder::printStatistics(std::string searchAlgo, int numCells, int cost)
         mStartPosition.y << ")" << std::endl;
     std::cout << "End position: (" << mEndPosition.x << "," << 
         mEndPosition.y << ")" << std::endl;
-    std::cout << "Number of opened nodes: " << mNodes.size() << std::endl;
+    std::cout << "Number of opened nodes: " << mNumNodesOpened << std::endl;
     std::cout << "Number of cells on path: " << numCells << std::endl;
-    std::cout << "Cost :" << cost << std::endl;
-    std::cout << "----- Breadth Search Statistics -----" << std::endl << std::endl;
+    std::cout << "Cost: " << cost << std::endl;
+    std::cout << "----- " << searchAlgo << " Search Statistics -----" << std::endl << std::endl;
 }
 
 void Pathfinder::breadthSearch()
@@ -144,34 +147,15 @@ void Pathfinder::breadthSearch()
 
     while( !mOpen.empty() )
     {
-        mNodes.push_back(mOpen.front());
+        Node *pe = mOpen.front();
         mOpen.pop_front();
-        Node *pe = &mNodes.back();
 
-        sf::Vector2i gridPos = mNodes.back().getGridPos();
+        sf::Vector2i gridPos = pe->getGridPos();
 
         // North
         if (gridPos.y - 1 >= 0)
         {
             if (addNodeBreadth(sf::Vector2i(gridPos.x, gridPos.y-1), pe))
-            {
-               break; 
-            }
-        }
-
-        // East
-        if (gridPos.x + 1 < mGridSize.x)
-        {
-            if (addNodeBreadth(sf::Vector2i(gridPos.x+1, gridPos.y), pe))
-            {
-               break; 
-            }
-        }
-
-        // South
-        if (gridPos.y + 1 < mGridSize.y)
-        {
-            if (addNodeBreadth(sf::Vector2i(gridPos.x, gridPos.y+1), pe))
             {
                break; 
             }
@@ -186,6 +170,24 @@ void Pathfinder::breadthSearch()
             }
         }
 
+        // South
+        if (gridPos.y + 1 < mGridSize.y)
+        {
+            if (addNodeBreadth(sf::Vector2i(gridPos.x, gridPos.y+1), pe))
+            {
+               break; 
+            }
+        }
+
+        // East
+        if (gridPos.x + 1 < mGridSize.x)
+        {
+            if (addNodeBreadth(sf::Vector2i(gridPos.x+1, gridPos.y), pe))
+            {
+               break; 
+            }
+        }
+
         // This is used so I can draw the nodes while updating. It does not 
         // belong to the search algorithm but it is a silly hack so I can draw
         // the nodes visited and make a cool animation of how the algo
@@ -199,12 +201,10 @@ void Pathfinder::breadthSearch()
     
     foundPath = true;
     // Move last element
-    if ( !mNodes.empty() )
+    if ( !mOpen.empty() )
     {
-        mNodes.push_back(std::move(mOpen.back()));
-        mOpen.pop_back();
         mNodesVisited.clear();
-        std::pair<int, int> stats = makePath(&mNodes.back());
+        std::pair<int, int> stats = makePath();
         printStatistics("Breadth", stats.first, stats.second);
     }
     
@@ -215,20 +215,22 @@ bool Pathfinder::addNodeBreadth(sf::Vector2i gridPos, Node *parent)
 {
     if ( !mVisited[gridPos.y][gridPos.x] )
     {
+        mNumNodesOpened++;
         mVisited[gridPos.y][gridPos.x] = true;
-        mOpen.push_back(Node(sf::Vector2i(gridPos.x, gridPos.y)));
-        mOpen.back().setParent(parent);
+        mOpen.push_back(&mMap.mGrid[gridPos.y][gridPos.x]);
+        mOpen.back()->setParent(parent);
         
         // To visualize the visited node
         float blockGap = mMap.getBlockGap();
         float blockSize = mMap.getBlockSize();
+
         sf::RectangleShape n;
         n.setSize(sf::Vector2f(blockSize, blockSize));
         n.setPosition(mMap.mGrid[gridPos.y][gridPos.x].getPosition());
         n.setFillColor(sf::Color(0,0,0,170));
         mNodesVisited.push_back(n);
 
-        if (mOpen.back().getGridPos() == mEndPosition)
+        if (mOpen.back()->getGridPos() == mEndPosition)
             return true;
     }
     return false;
@@ -236,22 +238,19 @@ bool Pathfinder::addNodeBreadth(sf::Vector2i gridPos, Node *parent)
 
 void Pathfinder::depthSearch()
 {
-    if (mAnimationTimer.getElapsedTime().asMilliseconds() < 50)
+    if (mAnimationTimer.getElapsedTime().asMilliseconds() < 0)
         return;
 
     while( !mOpen.empty() )
     {
-        mNodes.push_back(std::move(mOpen.front()));
+        Node *pe = mOpen.front();
         mOpen.pop_front();
-        Node *pe = &mNodes.back();
 
-        sf::Vector2i gridPos = mNodes.back().getGridPos();
+        sf::Vector2i gridPos = pe->getGridPos();
 
-        int nNodesOpened = 0;
-        // North
+        int nNodesOpened = mNumNodesOpened;
         if (gridPos.y - 1 >= 0)
         {
-            nNodesOpened++;
             if (addNodeDepth(sf::Vector2i(gridPos.x, gridPos.y-1), pe))
             {
                break; 
@@ -259,10 +258,9 @@ void Pathfinder::depthSearch()
         }
 
         // East
-        if (gridPos.x + 1 < mGridSize.x)
+        if (gridPos.x - 1 >= 0)
         {
-            nNodesOpened++;
-            if (addNodeDepth(sf::Vector2i(gridPos.x+1, gridPos.y), pe))
+            if (addNodeDepth(sf::Vector2i(gridPos.x-1, gridPos.y), pe))
             {
                break; 
             }
@@ -271,7 +269,6 @@ void Pathfinder::depthSearch()
         // South
         if (gridPos.y + 1 < mGridSize.y)
         {
-            nNodesOpened++;
             if (addNodeDepth(sf::Vector2i(gridPos.x, gridPos.y+1), pe))
             {
                break; 
@@ -279,16 +276,15 @@ void Pathfinder::depthSearch()
         }
 
         // West
-        if (gridPos.x - 1 >= 0)
+        if (gridPos.x + 1 < mGridSize.x)
         {
-            nNodesOpened++;
-            if (addNodeDepth(sf::Vector2i(gridPos.x-1, gridPos.y), pe))
+            if (addNodeDepth(sf::Vector2i(gridPos.x+1, gridPos.y), pe))
             {
                break; 
             }
         }
 
-        std::reverse(mOpen.begin(), mOpen.begin()+nNodesOpened);
+        std::reverse(mOpen.begin(), mOpen.begin()+(mNumNodesOpened-nNodesOpened));
 
         // This is used so I can draw the nodes while updating. It does not 
         // belong to the search algorithm but it is a silly hack so I can draw
@@ -303,13 +299,10 @@ void Pathfinder::depthSearch()
     
     foundPath = true;
     // Move last element
-    if ( !mNodes.empty() )
+    if ( !mOpen.empty() )
     {
-        mNodes.push_back(std::move(mOpen.front()));
-        mOpen.pop_back();
-
         mNodesVisited.clear();
-        std::pair<int,int> stats = makePath(&mNodes.back());
+        std::pair<int,int> stats = makePath();
         printStatistics("Depth", stats.first, stats.second);
     }
     
@@ -320,9 +313,10 @@ bool Pathfinder::addNodeDepth(sf::Vector2i gridPos, Node *parent)
 {
     if ( !mVisited[gridPos.y][gridPos.x] )
     {
+        mNumNodesOpened++;
         mVisited[gridPos.y][gridPos.x] = true;
-        mOpen.push_front(Node(sf::Vector2i(gridPos.x, gridPos.y)));
-        mOpen.front().setParent(parent);
+        mOpen.push_front(&mMap.mGrid[gridPos.y][gridPos.x]);
+        mOpen.front()->setParent(parent);
         
         // To visualize the visited node
         float blockGap = mMap.getBlockGap();
@@ -333,14 +327,14 @@ bool Pathfinder::addNodeDepth(sf::Vector2i gridPos, Node *parent)
         n.setFillColor(sf::Color(0,0,0,170));
         mNodesVisited.push_back(n);
 
-        if (mOpen.front().getGridPos() == mEndPosition)
+        if (mOpen.front()->getGridPos() == mEndPosition)
             return true;
     }
     return false;
 }
 
 
-std::pair<int,int> Pathfinder::makePath(Node *dest)
+std::pair<int,int> Pathfinder::makePath()
 {
     int cells = 1;
     int cost = 0;
@@ -349,11 +343,12 @@ std::pair<int,int> Pathfinder::makePath(Node *dest)
     float blockSize = mMap.getBlockSize();
     float lineThickness = 5.0;
     float hexSize = lineThickness / 1.5;
-    Node *n = dest;
+    Node *n = &mMap.mGrid[mEndPosition.y][mEndPosition.x];
     Node *n_next;
 
     sf::Vector2f lineSize(blockSize + blockGap, lineThickness);
     
+    int i = 0;
     while(n->getParent() != nullptr)
     {
         cells++;
@@ -367,8 +362,8 @@ std::pair<int,int> Pathfinder::makePath(Node *dest)
         //std::cout << "(" << n->getGridPos().x << ", " << n->getGridPos().y << ")" << std::endl;
 
         // Calculate the middle point of the block on pos nGridPos
-        float middleX = mMap.mGrid[nGridPos.y][nGridPos.x].getPosition().x + (blockSize/2.0);
-        float middleY = mMap.mGrid[nGridPos.y][nGridPos.x].getPosition().y + (blockSize/2.0);
+        float middleX = n->getPosition().x + (blockSize/2.0);
+        float middleY = n->getPosition().y + (blockSize/2.0);
 
         // LINE
         sf::RectangleShape line(lineSize);
@@ -398,9 +393,10 @@ std::pair<int,int> Pathfinder::makePath(Node *dest)
         hex.setPosition(middleX, middleY);
         mPoints.push_back(hex);
        
-
         n = n->getParent();
     }
+
+    cost += n->getCost();
 
     // Adding last hex
     sf::Vector2i nGridPos = n->getGridPos();

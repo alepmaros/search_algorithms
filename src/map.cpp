@@ -31,34 +31,19 @@ Map::Map(std::string file, sf::Vector2f offset, float blockSize, float blockGap)
     // Read map
     while(getline(infile, line))
     {
-        mGrid.push_back(std::vector<sf::RectangleShape>());
+        mGrid.push_back(std::vector<Node>());
         int type;
         std::istringstream ss(line);
         while(ss >> type)
         {
             //std::cout << type << " ";
 
-            sf::RectangleShape rs;
-            rs.setSize(sf::Vector2f(blockSize, blockSize));
-            rs.setPosition( sf::Vector2f((j+1) * blockGap + j * blockSize + offset.x,
-                        (i+1) * blockGap + i * blockSize + offset.y) );
-            
-            switch(type)
-            {
-                case bs::FloorType::Grass:
-                    rs.setFillColor(sf::Color::Green);
-                    break;
-                case bs::FloorType::Hill:
-                    rs.setFillColor(sf::Color(128, 73, 2));
-                    break;
-                case bs::FloorType::Swamp:
-                    rs.setFillColor(sf::Color(32, 63, 255));
-                    break;
-                case bs::FloorType::Fire:
-                    rs.setFillColor(sf::Color(255, 57, 4));
-                    break;
-            }
-            mGrid[i].push_back(rs);
+            sf::Vector2f bSize(blockSize, blockSize);
+            sf::Vector2f bPos((j+1) * blockGap + j * blockSize + offset.x,
+                        (i+1) * blockGap + i * blockSize + offset.y);
+            sf::Vector2i gridPos(j,i);
+
+           mGrid[i].push_back(Node(gridPos, static_cast<bs::FloorType>(type), bPos, bSize));
             j++;
         }
         mGridSize.x = j;
@@ -80,8 +65,8 @@ void Map::update()
 
 void Map::draw(sf::RenderWindow* window)
 {
-    std::vector<std::vector<sf::RectangleShape> >::iterator itvv;
-    std::vector<sf::RectangleShape>::iterator itv;
+    std::vector<std::vector<Node> >::iterator itvv;
+    std::vector<Node>::iterator itv;
 
     for (itvv = mGrid.begin(); itvv != mGrid.end(); itvv++)
     {
@@ -124,8 +109,8 @@ void Map::setEndPosition(int x, int y)
 // Get the index of the Tile based on a Screen position
 sf::Vector2i Map::getIndexByPosition(int x, int y)
 {
-    std::vector<std::vector<sf::RectangleShape> >::iterator itvv;
-    std::vector<sf::RectangleShape>::iterator itv;
+    std::vector<std::vector<Node> >::iterator itvv;
+    std::vector<Node>::iterator itv;
     int i = 0, j = 0;
 
     for (itv = mGrid.at(0).begin(); itv != mGrid.at(0).end(); itv++)
@@ -196,4 +181,9 @@ float Map::getBlockGap() const
 float Map::getBlockSize() const
 {
     return mBlockSize;
+}
+
+std::vector<std::vector<Node> >* Map::getGridPointer()
+{
+    return &mGrid;
 }

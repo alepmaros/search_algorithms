@@ -9,7 +9,9 @@
 
 #include <vector>
 #include <string>
+
 #include <SFML/Graphics.hpp>
+#include "node.h"
 
 
 class Map
@@ -32,12 +34,14 @@ class Map
         float           getBlockSize() const;
         float           getBlockGap() const;
 
+        std::vector<std::vector<Node> >* getGridPointer();
+
     private:
         void            setStartPosition(int x, int j);
         void            setEndPosition(int x, int j);
         
     public:
-        std::vector<std::vector<sf::RectangleShape> > mGrid;
+        std::vector<std::vector<Node> > mGrid;
 
     private:
         // Map offset

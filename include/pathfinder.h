@@ -21,7 +21,7 @@ class Pathfinder
         void    setSearchAlgorithm(bs::SearchAlgorithm sa);
         void    calculatePath(bs::SearchAlgorithm sa);
 
-        std::pair<int,int>  makePath(Node *dest);
+        std::pair<int,int>  makePath();
 
     private:
         void    initializeSearch();
@@ -43,8 +43,8 @@ class Pathfinder
         // mOpen = list of nodes yet to be visited
         // mNodes = vector to store the nodes already visited
         std::vector<std::vector<bool> > mVisited;
-        std::deque<Node>                mOpen;
-        std::list<Node>                 mNodes;
+        std::deque<Node*>               mOpen;
+        int                             mNumNodesOpened;
         sf::Vector2i                    mStartPosition;
         sf::Vector2i                    mEndPosition;
         sf::Vector2i                    mGridSize;
