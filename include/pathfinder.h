@@ -5,10 +5,19 @@
 
 #include <list>
 #include <deque>
+#include <queue>
 
 #include "util.h"
 #include "node.h"
 #include "map.h"
+
+//struct SortByPath
+//{
+    //bool operator()(const int &a, const int &b) const
+    //{
+        //return a->getPathCost() < b->getPathCost();
+    //}
+//};
 
 class Pathfinder
 {
@@ -31,6 +40,9 @@ class Pathfinder
         void    breadthSearch();
         bool    addNodeBreadth(sf::Vector2i gridPos, Node *parent);
 
+        void    uniformCostSearch();
+        bool    addNodeUniformCost(sf::Vector2i gridPos, Node *parent);
+
         void    depthSearch();
         bool    addNodeDepth(sf::Vector2i gridPos, Node *parent);
 
@@ -44,6 +56,11 @@ class Pathfinder
         // mNodes = vector to store the nodes already visited
         std::vector<std::vector<bool> > mVisited;
         std::deque<Node*>               mOpen;
+
+        //std::priority_queue<int,
+            //std::vector<int>,
+            //SortByPath>                 mOpenPriority;
+
         int                             mNumNodesOpened;
         sf::Vector2i                    mStartPosition;
         sf::Vector2i                    mEndPosition;

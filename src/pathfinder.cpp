@@ -38,7 +38,7 @@ void Pathfinder::update()
     }
     else if (mCurrentSearchAlgorithm == bs::SearchAlgorithm::UCS)
     {
-        //uniformCostSearch();
+        uniformCostSearch();
     }
 }
 
@@ -91,7 +91,7 @@ void Pathfinder::calculatePath(bs::SearchAlgorithm sa)
     }
     else if (mCurrentSearchAlgorithm == bs::SearchAlgorithm::UCS)
     {
-        //uniformCostSearch();
+        uniformCostSearch();
     }
 
 }
@@ -113,6 +113,8 @@ void Pathfinder::initializeSearch()
 
     // Add startPosition to node to be visited list
     mOpen.clear();
+    //mOpenPriority.clear();
+
     mOpen.push_back(&mMap.mGrid[mStartPosition.y][mStartPosition.x]);
 
     // Clear visited grid
@@ -203,7 +205,7 @@ void Pathfinder::breadthSearch()
     // Move last element
     if ( !mOpen.empty() )
     {
-        mNodesVisited.clear();
+        //mNodesVisited.clear();
         std::pair<int, int> stats = makePath();
         printStatistics("Breadth", stats.first, stats.second);
     }
@@ -235,6 +237,131 @@ bool Pathfinder::addNodeBreadth(sf::Vector2i gridPos, Node *parent)
     }
     return false;
 }
+
+void Pathfinder::uniformCostSearch()
+{
+    if (mAnimationTimer.getElapsedTime().asMilliseconds() < 1)
+        return;
+
+    while( !mOpen.empty() )
+    {
+        Node *pe = mOpen.front();
+        mOpen.pop_front();
+
+        sf::Vector2i gridPos = pe->getGridPos();
+        mVisited[gridPos.y][gridPos.x] = true;
+
+        if (pe->getGridPos() == mEndPosition)
+            break;
+
+        int openedNodes = 0;
+        // North
+        if (gridPos.y - 1 >= 0)
+        {
+            if (addNodeUniformCost(sf::Vector2i(gridPos.x, gridPos.y-1), pe))
+            {
+                openedNodes++;
+            }
+        }
+
+        // West
+        if (gridPos.x - 1 >= 0)
+        {
+            if (addNodeUniformCost(sf::Vector2i(gridPos.x-1, gridPos.y), pe))
+            {
+                openedNodes++;
+            }
+        }
+
+        // South
+        if (gridPos.y + 1 < mGridSize.y)
+        {
+            if (addNodeUniformCost(sf::Vector2i(gridPos.x, gridPos.y+1), pe))
+            {
+                openedNodes++;
+            }
+        }
+
+        // East
+        if (gridPos.x + 1 < mGridSize.x)
+        {
+            if (addNodeUniformCost(sf::Vector2i(gridPos.x+1, gridPos.y), pe))
+            {
+                openedNodes++;
+            }
+        }
+
+        std::sort(mOpen.begin(), mOpen.end(),
+                [](const Node *a, const Node *b) -> bool
+                {
+                    return a->getPathCost() < b->getPathCost();
+                });
+
+        // This is used so I can draw the nodes while updating. It does not 
+        // belong to the search algorithm but it is a silly hack so I can draw
+        // the nodes visited and make a cool animation of how the algo
+        // works
+        if ( !mOpen.empty() ) {
+            mAnimationTimer.restart();
+            return;
+        }
+    }
+
+    
+    foundPath = true;
+    // Move last element
+    if ( !mOpen.empty() )
+    {
+        //mNodesVisited.clear();
+        std::pair<int, int> stats = makePath();
+        printStatistics("Uniform Cost", stats.first, stats.second);
+    }
+    
+}
+
+// addNodeBreadth will return true if the node that it is adding is the destination
+bool Pathfinder::addNodeUniformCost(sf::Vector2i gridPos, Node *parent)
+{
+    if ( !mVisited[gridPos.y][gridPos.x] )
+    {
+        mNumNodesOpened++;
+        Node *p = &mMap.mGrid[gridPos.y][gridPos.x];
+
+        std::deque<Node*>::iterator it = mOpen.end();
+        if (p->wasVisited())
+        {
+            it = std::find_if(mOpen.begin(), mOpen.end(), 
+                    [&gridPos](const Node *a) -> bool
+                    {
+                        return a->getGridPos() == gridPos;
+                    });
+        }
+
+        if (it != mOpen.end())
+        {
+            if ((*it)->getPathCost() > (parent->getPathCost() + p->getCost()))
+                (*it)->setParent(parent);
+        }
+        else
+        {
+            p->setParent(parent);
+            mOpen.push_back(p);
+        }
+        
+        // To visualize the visited node
+        float blockGap = mMap.getBlockGap();
+        float blockSize = mMap.getBlockSize();
+
+        sf::RectangleShape n;
+        n.setSize(sf::Vector2f(blockSize, blockSize));
+        n.setPosition(mMap.mGrid[gridPos.y][gridPos.x].getPosition()
+                + sf::Vector2f(blockSize * mGridSize.y + 42 * mMap.getBlockGap(), 0));
+        n.setFillColor(sf::Color(255,0,0,50));
+        mNodesVisited.push_back(n);
+
+    }
+}
+
 
 void Pathfinder::depthSearch()
 {
@@ -301,7 +428,7 @@ void Pathfinder::depthSearch()
     // Move last element
     if ( !mOpen.empty() )
     {
-        mNodesVisited.clear();
+        //mNodesVisited.clear();
         std::pair<int,int> stats = makePath();
         printStatistics("Depth", stats.first, stats.second);
     }
@@ -332,7 +459,6 @@ bool Pathfinder::addNodeDepth(sf::Vector2i gridPos, Node *parent)
     }
     return false;
 }
-
 
 std::pair<int,int> Pathfinder::makePath()
 {
@@ -412,3 +538,4 @@ std::pair<int,int> Pathfinder::makePath()
    
     return std::make_pair(cells, cost);
 }
+

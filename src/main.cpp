@@ -32,6 +32,7 @@ int main()
 
     int sizeWindowY = Y_MAP_OFFSET + ( (gridSize.y+1) * BLOCK_GAP) + (BLOCK_SIZE * gridSize.y);
     int sizeWindowX = X_MAP_OFFSET + ( (gridSize.x+1) * BLOCK_GAP) + (BLOCK_SIZE * gridSize.x);
+    sizeWindowX *= 2;
     
     sf::ContextSettings settings;
     settings.antialiasingLevel = 8;

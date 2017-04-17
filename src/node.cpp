@@ -6,6 +6,7 @@ Node::Node(sf::Vector2i gridPos, bs::FloorType type, sf::Vector2f blockPosition,
       , mType(type)
 {
     mParent = nullptr;
+    mPathCost = 0;
 
     mShape.setPosition(blockPosition);
     mShape.setSize(size);
@@ -37,6 +38,11 @@ void Node::draw(sf::RenderTarget& target, sf::RenderStates states) const
 
 void Node::setParent(Node *parent)
 {
+    if (parent != nullptr)
+        mPathCost = parent->getPathCost();
+    else
+        mPathCost = 0;
+
     mParent = parent;
 }
 
@@ -58,4 +64,25 @@ int Node::getCost() const
 sf::Vector2f Node::getPosition() const
 {
     return mShape.getPosition();
+}
+
+int Node::getPathCost() const
+{
+    return mPathCost + mCost;
+}
+
+int Node::addPathCost(int cost)
+{
+    mPathCost += cost;
+    return mPathCost;
+}
+
+void Node::setPathCost(int cost)
+{
+    mPathCost = cost;
+}
+
+bool Node::wasVisited()
+{
+    return mPathCost - mCost != 0;
 }

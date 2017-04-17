@@ -17,6 +17,13 @@ class Node : public sf::Drawable
         sf::Vector2i    getGridPos() const;
         sf::Vector2f    getPosition() const;
         int             getCost() const;
+        
+        int             getPathCost() const;
+
+        int             addPathCost(int cost);
+        void            setPathCost(int cost);
+
+        bool            wasVisited();
 
     private:
         virtual void    draw(sf::RenderTarget& target, sf::RenderStates states) const;
@@ -24,7 +31,10 @@ class Node : public sf::Drawable
     private:
         Node                *mParent;
         sf::Vector2i        mGridPos;
+
         int                 mCost;
+        int                 mPathCost;
+
         sf::RectangleShape  mShape;
         bs::FloorType       mType;
 };
