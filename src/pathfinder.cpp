@@ -325,24 +325,29 @@ void Pathfinder::IDSearch()
             continue;
         }
 
+        int level = pe->getLevel();
         std::vector<Node*> adjacentNodes = pe->getAdjacentNodes();
         for(std::vector<Node*>::reverse_iterator it = adjacentNodes.rbegin();
                 it != adjacentNodes.rend(); it++)
         {
-            if ( !(*it)->wasVisited() )
+            bool hasLowerLevel = level+1 < (*it)->getLevel();
+            if ( !(*it)->wasVisited() || hasLowerLevel )
             {
                 mNumNodesOpened++;
                 mOpen.push_front((*it));
                 mOpen.front()->setParent(pe);
                 
-                // To visualize the visited node
-                float blockGap = mMap.getBlockGap();
-                float blockSize = mMap.getBlockSize();
-                sf::RectangleShape n;
-                n.setSize(sf::Vector2f(blockSize, blockSize));
-                n.setPosition((*it)->getPosition());
-                n.setFillColor(sf::Color(0,0,0,170));
-                mNodesVisited.push_back(n);
+                if (!hasLowerLevel)
+                {
+                    // To visualize the visited node
+                    float blockGap = mMap.getBlockGap();
+                    float blockSize = mMap.getBlockSize();
+                    sf::RectangleShape n;
+                    n.setSize(sf::Vector2f(blockSize, blockSize));
+                    n.setPosition((*it)->getPosition());
+                    n.setFillColor(sf::Color(0,0,0,170));
+                    mNodesVisited.push_back(n);
+                }
 
                 if (mOpen.front()->getGridPos() == mEndPosition)
                 {
@@ -351,6 +356,15 @@ void Pathfinder::IDSearch()
                 }
             }
 
+        }
+
+        // This is used so I can draw the nodes while updating. It does not 
+        // belong to the search algorithm but it is a silly hack so I can draw
+        // the nodes visited and make a cool animation of how the algo
+        // works
+        if ( !mOpen.empty() ) {
+            mAnimationTimer.restart();
+            return;
         }
     }
 
