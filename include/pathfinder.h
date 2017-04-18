@@ -68,7 +68,7 @@ class Pathfinder
 
         // For visualization of the algorithm
         sf::Clock                       mAnimationTimer;
-        bool                            foundPath;
+        bool                            mFoundPath;
         std::vector<sf::CircleShape>    mPoints;
         std::vector<sf::RectangleShape> mLines;
         std::vector<sf::RectangleShape> mNodesVisited;

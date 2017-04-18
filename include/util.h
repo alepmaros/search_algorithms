@@ -14,12 +14,14 @@ namespace bs
     // BS = Breadth Search
     // DS = Depth Search
     // UCS = Uniform Cost Search
+    // IDS = Iterative Deepening Search
     enum SearchAlgorithm
     {
         None,
-        BS,
-        DS,
-        UCS
+        BFS,
+        DFS,
+        UCS,
+        IDS
     };
 }
 

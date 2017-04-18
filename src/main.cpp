@@ -81,15 +81,19 @@ int main()
                 {
                     case sf::Keyboard::Num1:
                         textSelectedSearch.setString("Breadth Search");
-                        selectedSearch = bs::SearchAlgorithm::BS;
+                        selectedSearch = bs::SearchAlgorithm::BFS;
                         break;
                     case sf::Keyboard::Num2:
                         textSelectedSearch.setString("Depth Search");
-                        selectedSearch = bs::SearchAlgorithm::DS;
+                        selectedSearch = bs::SearchAlgorithm::DFS;
                         break;
                     case sf::Keyboard::Num3:
                         textSelectedSearch.setString("Uniform Cost Search");
                         selectedSearch = bs::SearchAlgorithm::UCS;
+                        break;
+                    case sf::Keyboard::Num4:
+                        textSelectedSearch.setString("Iterative Deepening Search");
+                        selectedSearch = bs::SearchAlgorithm::IDS;
                         break;
                     case sf::Keyboard::Return:
                         pathfinder.calculatePath(selectedSearch);

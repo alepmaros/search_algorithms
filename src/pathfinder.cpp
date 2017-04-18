@@ -23,16 +23,16 @@ Pathfinder::Pathfinder(Map &map)
 
 void Pathfinder::update()
 {
-    if (foundPath || mCurrentSearchAlgorithm == bs::SearchAlgorithm::None) 
+    if (mFoundPath || mCurrentSearchAlgorithm == bs::SearchAlgorithm::None) 
     {
         return;
     }
 
-    if (mCurrentSearchAlgorithm == bs::SearchAlgorithm::BS)
+    if (mCurrentSearchAlgorithm == bs::SearchAlgorithm::BFS)
     {
         breadthSearch();
     }
-    else if (mCurrentSearchAlgorithm == bs::SearchAlgorithm::DS)
+    else if (mCurrentSearchAlgorithm == bs::SearchAlgorithm::DFS)
     {
         depthSearch();
     }
@@ -81,11 +81,11 @@ void Pathfinder::calculatePath(bs::SearchAlgorithm sa)
 
     initializeSearch();
 
-    if (mCurrentSearchAlgorithm == bs::SearchAlgorithm::BS)
+    if (mCurrentSearchAlgorithm == bs::SearchAlgorithm::BFS)
     {
         breadthSearch();
     }
-    else if (mCurrentSearchAlgorithm == bs::SearchAlgorithm::DS)
+    else if (mCurrentSearchAlgorithm == bs::SearchAlgorithm::DFS)
     {
         depthSearch();
     }
@@ -105,7 +105,7 @@ void Pathfinder::initializeSearch()
     mLines.clear();
     mPoints.clear();
     mNodesVisited.clear();
-    foundPath = false;
+    mFoundPath = false;
     mNumNodesOpened = 0;
     
     //std::cout << mStartPosition.x << " " << mStartPosition.y << std::endl;
@@ -201,11 +201,11 @@ void Pathfinder::breadthSearch()
     }
 
     
-    foundPath = true;
+    mFoundPath = true;
     // Move last element
     if ( !mOpen.empty() )
     {
-        //mNodesVisited.clear();
+        mNodesVisited.clear();
         std::pair<int, int> stats = makePath();
         printStatistics("Breadth", stats.first, stats.second);
     }
@@ -308,7 +308,7 @@ void Pathfinder::uniformCostSearch()
     }
 
     
-    foundPath = true;
+    mFoundPath = true;
     // Move last element
     if ( !mOpen.empty() )
     {
@@ -424,11 +424,11 @@ void Pathfinder::depthSearch()
     }
 
     
-    foundPath = true;
+    mFoundPath = true;
     // Move last element
     if ( !mOpen.empty() )
     {
-        //mNodesVisited.clear();
+        mNodesVisited.clear();
         std::pair<int,int> stats = makePath();
         printStatistics("Depth", stats.first, stats.second);
     }
@@ -473,69 +473,57 @@ std::pair<int,int> Pathfinder::makePath()
     Node *n_next;
 
     sf::Vector2f lineSize(blockSize + blockGap, lineThickness);
-    
+
     int i = 0;
-    while(n->getParent() != nullptr)
+    while(n != nullptr)
     {
         cells++;
         cost += n->getCost();
 
-        n_next = n->getParent();
+        if (n->getParent() != nullptr)
+        {
+            n_next = n->getParent();
 
-        sf::Vector2i nGridPos = n->getGridPos();
-        sf::Vector2i nNextGridPos = n_next->getGridPos();
+            sf::Vector2i nGridPos = n->getGridPos();
+            sf::Vector2i nNextGridPos = n_next->getGridPos();
 
-        //std::cout << "(" << n->getGridPos().x << ", " << n->getGridPos().y << ")" << std::endl;
+            //std::cout << "(" << n->getGridPos().x << ", " << n->getGridPos().y << ")" << std::endl;
 
-        // Calculate the middle point of the block on pos nGridPos
-        float middleX = n->getPosition().x + (blockSize/2.0);
-        float middleY = n->getPosition().y + (blockSize/2.0);
+            // Calculate the middle point of the block on pos nGridPos
+            float middleX = n->getPosition().x + (blockSize/2.0);
+            float middleY = n->getPosition().y + (blockSize/2.0);
 
-        // LINE
-        sf::RectangleShape line(lineSize);
-        line.setFillColor(sf::Color::White);
-        line.setOrigin(0, lineThickness / 2.0);
+            // LINE
+            sf::RectangleShape line(lineSize);
+            line.setFillColor(sf::Color::White);
+            line.setOrigin(0, lineThickness / 2.0);
 
-        if (nGridPos.x == nNextGridPos.x)
-            line.rotate(90);
+            if (nGridPos.x == nNextGridPos.x)
+                line.rotate(90);
 
-        sf::Vector2f linePos(middleX, middleY);
+            sf::Vector2f linePos(middleX, middleY);
 
-        if (nGridPos.y > nNextGridPos.y)
-            linePos.y -= blockSize;
+            if (nGridPos.y > nNextGridPos.y)
+                linePos.y -= blockSize;
 
-        if (nGridPos.x > nNextGridPos.x)
-            linePos.x -= blockSize;
+            if (nGridPos.x > nNextGridPos.x)
+                linePos.x -= blockSize;
 
-        line.setPosition(linePos);
-        mLines.push_back(line);
+            line.setPosition(linePos);
+            mLines.push_back(line);
 
-        // HEXAGON
-        sf::CircleShape hex(hexSize, 6);
-        hex.setFillColor(sf::Color(0,0,0,0));
-        hex.setOutlineColor(sf::Color::Black);
-        hex.setOutlineThickness(1.0f);
-        hex.setOrigin( hexSize, hexSize );
-        hex.setPosition(middleX, middleY);
-        mPoints.push_back(hex);
-       
+            // HEXAGON
+            sf::CircleShape hex(hexSize, 6);
+            hex.setFillColor(sf::Color(0,0,0,0));
+            hex.setOutlineColor(sf::Color::Black);
+            hex.setOutlineThickness(1.0f);
+            hex.setOrigin( hexSize, hexSize );
+            hex.setPosition(middleX, middleY);
+            mPoints.push_back(hex);
+        }
         n = n->getParent();
     }
 
-    cost += n->getCost();
-
-    // Adding last hex
-    sf::Vector2i nGridPos = n->getGridPos();
-    float middleX = mMap.mGrid[nGridPos.y][nGridPos.x].getPosition().x + (blockSize/2.0);
-    float middleY = mMap.mGrid[nGridPos.y][nGridPos.x].getPosition().y + (blockSize/2.0);
-    sf::CircleShape hex(hexSize, 6);
-    hex.setFillColor(sf::Color(0,0,0,0));
-    hex.setOutlineColor(sf::Color::Black);
-    hex.setOutlineThickness(1.0f);
-    hex.setOrigin( hexSize, hexSize );
-    hex.setPosition(middleX, middleY);
-    mPoints.push_back(hex);
-   
     return std::make_pair(cells, cost);
 }
 
