@@ -84,14 +84,10 @@ int main()
                         selectedSearch = bs::SearchAlgorithm::BFS;
                         break;
                     case sf::Keyboard::Num2:
-                        textSelectedSearch.setString("Depth Search");
-                        selectedSearch = bs::SearchAlgorithm::DFS;
-                        break;
-                    case sf::Keyboard::Num3:
                         textSelectedSearch.setString("Uniform Cost Search");
                         selectedSearch = bs::SearchAlgorithm::UCS;
                         break;
-                    case sf::Keyboard::Num4:
+                    case sf::Keyboard::Num3:
                         textSelectedSearch.setString("Iterative Deepening Search");
                         selectedSearch = bs::SearchAlgorithm::IDS;
                         break;

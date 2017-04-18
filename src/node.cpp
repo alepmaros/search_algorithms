@@ -39,9 +39,15 @@ void Node::draw(sf::RenderTarget& target, sf::RenderStates states) const
 void Node::setParent(Node *parent)
 {
     if (parent != nullptr)
+    {
         mPathCost = parent->getPathCost();
+        mLevel = parent->getLevel() + 1;
+    }
     else
+    {
         mPathCost = 0;
+        mLevel = 0;
+    }
 
     mParent = parent;
 }
@@ -85,4 +91,14 @@ void Node::setPathCost(int cost)
 bool Node::wasVisited()
 {
     return mPathCost - mCost != 0;
+}
+
+void Node::setLevel(int level)
+{
+    mLevel = level;
+}
+
+int Node::getLevel() const
+{
+    return mLevel;
 }

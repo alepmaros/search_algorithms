@@ -32,9 +32,14 @@ void Pathfinder::update()
     {
         breadthSearch();
     }
-    else if (mCurrentSearchAlgorithm == bs::SearchAlgorithm::DFS)
+    else if (mCurrentSearchAlgorithm == bs::SearchAlgorithm::IDS)
     {
-        depthSearch();
+        if (mReachedLevel && mOpen.empty() && mAnimationTimer.getElapsedTime().asMilliseconds() > 200)
+        {
+            initializeSearch();
+            mMaxLevel++;
+        }
+        IDSearch();
     }
     else if (mCurrentSearchAlgorithm == bs::SearchAlgorithm::UCS)
     {
@@ -80,14 +85,15 @@ void Pathfinder::calculatePath(bs::SearchAlgorithm sa)
     }
 
     initializeSearch();
+    mMaxLevel = 0;
 
     if (mCurrentSearchAlgorithm == bs::SearchAlgorithm::BFS)
     {
         breadthSearch();
     }
-    else if (mCurrentSearchAlgorithm == bs::SearchAlgorithm::DFS)
+    else if (mCurrentSearchAlgorithm == bs::SearchAlgorithm::IDS)
     {
-        depthSearch();
+        IDSearch();
     }
     else if (mCurrentSearchAlgorithm == bs::SearchAlgorithm::UCS)
     {
@@ -106,6 +112,7 @@ void Pathfinder::initializeSearch()
     mPoints.clear();
     mNodesVisited.clear();
     mFoundPath = false;
+    mReachedLevel = false;
     mNumNodesOpened = 0;
     
     //std::cout << mStartPosition.x << " " << mStartPosition.y << std::endl;
@@ -363,22 +370,29 @@ bool Pathfinder::addNodeUniformCost(sf::Vector2i gridPos, Node *parent)
 }
 
 
-void Pathfinder::depthSearch()
+void Pathfinder::IDSearch()
 {
-    if (mAnimationTimer.getElapsedTime().asMilliseconds() < 0)
-        return;
+    //if (mAnimationTimer.getElapsedTime().asMilliseconds() < 0)
+        //return;
 
     while( !mOpen.empty() )
     {
         Node *pe = mOpen.front();
         mOpen.pop_front();
 
+        if (pe->getLevel() > mMaxLevel)
+        {
+            mReachedLevel = true;
+            mAnimationTimer.restart();
+            continue;
+        }
+
         sf::Vector2i gridPos = pe->getGridPos();
 
         int nNodesOpened = mNumNodesOpened;
         if (gridPos.y - 1 >= 0)
         {
-            if (addNodeDepth(sf::Vector2i(gridPos.x, gridPos.y-1), pe))
+            if (addNodeIDS(sf::Vector2i(gridPos.x, gridPos.y-1), pe))
             {
                break; 
             }
@@ -387,7 +401,7 @@ void Pathfinder::depthSearch()
         // East
         if (gridPos.x - 1 >= 0)
         {
-            if (addNodeDepth(sf::Vector2i(gridPos.x-1, gridPos.y), pe))
+            if (addNodeIDS(sf::Vector2i(gridPos.x-1, gridPos.y), pe))
             {
                break; 
             }
@@ -396,7 +410,7 @@ void Pathfinder::depthSearch()
         // South
         if (gridPos.y + 1 < mGridSize.y)
         {
-            if (addNodeDepth(sf::Vector2i(gridPos.x, gridPos.y+1), pe))
+            if (addNodeIDS(sf::Vector2i(gridPos.x, gridPos.y+1), pe))
             {
                break; 
             }
@@ -405,7 +419,7 @@ void Pathfinder::depthSearch()
         // West
         if (gridPos.x + 1 < mGridSize.x)
         {
-            if (addNodeDepth(sf::Vector2i(gridPos.x+1, gridPos.y), pe))
+            if (addNodeIDS(sf::Vector2i(gridPos.x+1, gridPos.y), pe))
             {
                break; 
             }
@@ -417,17 +431,17 @@ void Pathfinder::depthSearch()
         // belong to the search algorithm but it is a silly hack so I can draw
         // the nodes visited and make a cool animation of how the algo
         // works
-        if ( !mOpen.empty() ) {
-            mAnimationTimer.restart();
-            return;
-        }
+        //if ( !mOpen.empty() ) {
+            //mAnimationTimer.restart();
+            //return;
+        //}
     }
 
     
-    mFoundPath = true;
     // Move last element
     if ( !mOpen.empty() )
     {
+        mFoundPath = true;
         mNodesVisited.clear();
         std::pair<int,int> stats = makePath();
         printStatistics("Depth", stats.first, stats.second);
@@ -436,7 +450,7 @@ void Pathfinder::depthSearch()
 }
 
 // addNodeBreadth will return true if the node that it is adding is the destination
-bool Pathfinder::addNodeDepth(sf::Vector2i gridPos, Node *parent)
+bool Pathfinder::addNodeIDS(sf::Vector2i gridPos, Node *parent)
 {
     if ( !mVisited[gridPos.y][gridPos.x] )
     {

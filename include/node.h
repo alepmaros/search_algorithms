@@ -12,13 +12,14 @@ class Node : public sf::Drawable
                 sf::Vector2f position, sf::Vector2f size);
 
         void            setParent(Node *parent);
+        void            setLevel(int level);
 
         Node*           getParent() const;
         sf::Vector2i    getGridPos() const;
         sf::Vector2f    getPosition() const;
         int             getCost() const;
-        
         int             getPathCost() const;
+        int             getLevel() const;
 
         int             addPathCost(int cost);
         void            setPathCost(int cost);
@@ -34,6 +35,7 @@ class Node : public sf::Drawable
 
         int                 mCost;
         int                 mPathCost;
+        int                 mLevel;
 
         sf::RectangleShape  mShape;
         bs::FloorType       mType;

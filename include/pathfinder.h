@@ -43,8 +43,8 @@ class Pathfinder
         void    uniformCostSearch();
         bool    addNodeUniformCost(sf::Vector2i gridPos, Node *parent);
 
-        void    depthSearch();
-        bool    addNodeDepth(sf::Vector2i gridPos, Node *parent);
+        void    IDSearch();
+        bool    addNodeIDS(sf::Vector2i gridPos, Node *parent);
 
     private:
         Map                             &mMap;
@@ -53,9 +53,13 @@ class Pathfinder
         // Variables used in the algorithms
         // mVisited = stores if position was already visited
         // mOpen = list of nodes yet to be visited
-        // mNodes = vector to store the nodes already visited
+        // mLevel = tree level for ITS
         std::vector<std::vector<bool> > mVisited;
         std::deque<Node*>               mOpen;
+
+        // Control variables for IDS
+        int                             mMaxLevel;
+        bool                            mReachedLevel;
 
         //std::priority_queue<int,
             //std::vector<int>,
