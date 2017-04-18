@@ -7,6 +7,8 @@ Node::Node(sf::Vector2i gridPos, bs::FloorType type, sf::Vector2f blockPosition,
 {
     mParent = nullptr;
     mPathCost = 0;
+    mWasVisited = false;
+    mAdjacencyList.clear();
 
     mShape.setPosition(blockPosition);
     mShape.setSize(size);
@@ -90,7 +92,7 @@ void Node::setPathCost(int cost)
 
 bool Node::wasVisited()
 {
-    return mPathCost - mCost != 0;
+    return mPathCost != 0 || mWasVisited;
 }
 
 void Node::setLevel(int level)
@@ -101,4 +103,19 @@ void Node::setLevel(int level)
 int Node::getLevel() const
 {
     return mLevel;
+}
+
+std::vector<Node*> Node::getAdjacentNodes()
+{
+    return mAdjacencyList;
+}
+
+void Node::addAdjacentNode(Node *n)
+{
+    mAdjacencyList.push_back(n);
+}
+
+void Node::setVisited()
+{
+    mWasVisited = true;
 }

@@ -25,17 +25,24 @@ class Node : public sf::Drawable
         void            setPathCost(int cost);
 
         bool            wasVisited();
+        void            setVisited();
+
+        std::vector<Node*> getAdjacentNodes();
+        void            addAdjacentNode(Node *n);
 
     private:
         virtual void    draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
     private:
+        std::vector<Node*>  mAdjacencyList;
         Node                *mParent;
         sf::Vector2i        mGridPos;
 
         int                 mCost;
         int                 mPathCost;
         int                 mLevel;
+
+        bool                mWasVisited;
 
         sf::RectangleShape  mShape;
         bs::FloorType       mType;

@@ -38,13 +38,10 @@ class Pathfinder
                 int cost);
 
         void    breadthSearch();
-        bool    addNodeBreadth(sf::Vector2i gridPos, Node *parent);
 
         void    uniformCostSearch();
-        bool    addNodeUniformCost(sf::Vector2i gridPos, Node *parent);
 
         void    IDSearch();
-        bool    addNodeIDS(sf::Vector2i gridPos, Node *parent);
 
     private:
         Map                             &mMap;
@@ -73,6 +70,7 @@ class Pathfinder
         // For visualization of the algorithm
         sf::Clock                       mAnimationTimer;
         bool                            mFoundPath;
+        bool                            mPrintedStats;
         std::vector<sf::CircleShape>    mPoints;
         std::vector<sf::RectangleShape> mLines;
         std::vector<sf::RectangleShape> mNodesVisited;
