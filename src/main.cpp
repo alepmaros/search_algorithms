@@ -35,7 +35,7 @@ int main()
     sizeWindowX *= 2;
     
     sf::ContextSettings settings;
-    settings.antialiasingLevel = 8;
+    settings.antialiasingLevel = 2;
     sf::RenderWindow window(sf::VideoMode(sizeWindowX, sizeWindowY), "Blind Search", 
             sf::Style::Default, settings);
 

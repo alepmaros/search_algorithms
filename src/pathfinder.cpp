@@ -38,7 +38,9 @@ void Pathfinder::update()
         if (mReachedLevel && mOpen.empty() 
                 && mAnimationTimer.getElapsedTime().asMilliseconds() > 200)
         {
+            int mOldNumNodesOpened = mOldNumNodesOpened;
             initializeSearch();
+            mNumNodesOpened += mOldNumNodesOpened;
             mMaxLevel++;
         }
         IDSearch();
@@ -280,10 +282,7 @@ void Pathfinder::uniformCostSearch()
         std::sort(mOpen.begin(), mOpen.end(),
                 [](const Node *a, const Node *b) -> bool
                 {
-                    if (a->getLevel() == b->getLevel())
-                        return a->getPathCost() < b->getPathCost();
-
-                    return a->getLevel() < b->getLevel();
+                    return a->getPathCost() < b->getPathCost();
                 });
 
         // This is used so I can draw the nodes while updating. It does not 
