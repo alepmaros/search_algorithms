@@ -9,6 +9,7 @@ Pathfinder::Pathfinder(Map &map)
     mGridSize = map.getGridSize();
     mAnimationTimer.restart();
     mPrintedStats = false;
+    mNumNodesOpened = 0;
 
     for (int i = 0; i < mGridSize.y; i++)
     {
@@ -38,9 +39,9 @@ void Pathfinder::update()
         if (mReachedLevel && mOpen.empty() 
                 && mAnimationTimer.getElapsedTime().asMilliseconds() > 200)
         {
-            int mOldNumNodesOpened = mOldNumNodesOpened;
+            int oldNumNodesOpened = mNumNodesOpened;
             initializeSearch();
-            mNumNodesOpened += mOldNumNodesOpened;
+            mNumNodesOpened += oldNumNodesOpened;
             mMaxLevel++;
         }
         IDSearch();

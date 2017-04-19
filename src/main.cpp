@@ -94,6 +94,8 @@ int main()
                     case sf::Keyboard::Return:
                         pathfinder.calculatePath(selectedSearch);
                         break;
+                    default:
+                        break;
                 }
             }
         }

@@ -1,4 +1,10 @@
-# Blind Search
+# Search Algorithms
 
-Blind Search algorithms implemented using SFML/C++ (A*, Dijkstra, etc). Algorithms
-studied in my Artificial Intelligence course.
+Search Algorithms implemented for my IA course using SFML/C++
+
+# Algorithms
+
+- Breadth First Search
+- Uniform Cost Search
+- Iterative Deepening Search
+- A*
