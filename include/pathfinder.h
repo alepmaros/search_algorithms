@@ -43,6 +43,8 @@ class Pathfinder
 
         void    IDSearch();
 
+        void    AStarSearch();
+
     private:
         Map                             &mMap;
         bs::SearchAlgorithm             mCurrentSearchAlgorithm;
@@ -80,5 +82,4 @@ class Pathfinder
 
 };
 
-E
 #endif

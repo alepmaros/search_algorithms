@@ -91,6 +91,10 @@ int main()
                         textSelectedSearch.setString("Iterative Deepening Search");
                         selectedSearch = bs::SearchAlgorithm::IDS;
                         break;
+                    case sf::Keyboard::Num4:
+                        textSelectedSearch.setString("A*");
+                        selectedSearch = bs::SearchAlgorithm::AStar;
+                        break;
                     case sf::Keyboard::Return:
                         pathfinder.calculatePath(selectedSearch);
                         break;

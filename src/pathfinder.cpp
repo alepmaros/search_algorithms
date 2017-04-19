@@ -50,6 +50,10 @@ void Pathfinder::update()
     {
         uniformCostSearch();
     }
+    else if (mCurrentSearchAlgorithm == bs::SearchAlgorithm::AStar)
+    {
+        AStarSearch();
+    }
 }
 
 void Pathfinder::draw(sf::RenderWindow *window)
@@ -91,20 +95,6 @@ void Pathfinder::calculatePath(bs::SearchAlgorithm sa)
 
     initializeSearch();
     mMaxLevel = 0;
-
-    if (mCurrentSearchAlgorithm == bs::SearchAlgorithm::BFS)
-    {
-        breadthSearch();
-    }
-    else if (mCurrentSearchAlgorithm == bs::SearchAlgorithm::IDS)
-    {
-        IDSearch();
-    }
-    else if (mCurrentSearchAlgorithm == bs::SearchAlgorithm::UCS)
-    {
-        uniformCostSearch();
-    }
-
 }
 
 void Pathfinder::initializeSearch()
@@ -166,8 +156,6 @@ void Pathfinder::breadthSearch()
         Node *pe = mOpen.front();
         mOpen.pop_front();
 
-        sf::Vector2i gridPos = pe->getGridPos();
-
         std::vector<Node*> adjacentNodes = pe->getAdjacentNodes();
         for(std::vector<Node*>::iterator it = adjacentNodes.begin();
                 it != adjacentNodes.end(); it++)
@@ -179,7 +167,6 @@ void Pathfinder::breadthSearch()
                 mOpen.back()->setParent(pe);
                 
                 // To visualize the visited node
-                float blockGap = mMap.getBlockGap();
                 float blockSize = mMap.getBlockSize();
 
                 sf::RectangleShape n;
@@ -267,7 +254,6 @@ void Pathfinder::uniformCostSearch()
                 }
 
                 // To visualize the visited node
-                float blockGap = mMap.getBlockGap();
                 float blockSize = mMap.getBlockSize();
 
                 sf::RectangleShape n;
@@ -340,7 +326,6 @@ void Pathfinder::IDSearch()
                 if (!hasLowerLevel)
                 {
                     // To visualize the visited node
-                    float blockGap = mMap.getBlockGap();
                     float blockSize = mMap.getBlockSize();
                     sf::RectangleShape n;
                     n.setSize(sf::Vector2f(blockSize, blockSize));
@@ -381,6 +366,11 @@ void Pathfinder::IDSearch()
     
 }
 
+void Pathfinder::AStarSearch()
+{
+
+}
+
 std::pair<int,int> Pathfinder::makePath()
 {
     int cells = 1;
@@ -395,7 +385,6 @@ std::pair<int,int> Pathfinder::makePath()
 
     sf::Vector2f lineSize(blockSize + blockGap, lineThickness);
 
-    int i = 0;
     while(n != nullptr)
     {
         cells++;

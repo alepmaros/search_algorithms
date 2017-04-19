@@ -15,12 +15,14 @@ namespace bs
     // DS = Depth Search
     // UCS = Uniform Cost Search
     // IDS = Iterative Deepening Search
+    // AStar = A*
     enum SearchAlgorithm
     {
         None,
         BFS,
         DFS,
         UCS,
+        AStar,
         IDS
     };
 }
