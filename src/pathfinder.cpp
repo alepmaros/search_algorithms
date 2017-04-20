@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <algorithm>
+#include <cmath>
 
 Pathfinder::Pathfinder(Map &map)
     : mMap(map)
@@ -368,7 +369,103 @@ void Pathfinder::IDSearch()
 
 void Pathfinder::AStarSearch()
 {
+    if (mAnimationTimer.getElapsedTime().asMilliseconds() < 1)
+        return;
 
+    while( !mOpen.empty() && !mFoundPath )
+    {
+        Node *pe = mOpen.front();
+        mOpen.pop_front();
+
+        sf::Vector2i gridPos = pe->getGridPos();
+        mVisited[gridPos.y][gridPos.x] = true;
+
+        std::vector<Node*> adjacentNodes = pe->getAdjacentNodes();
+        for(std::vector<Node*>::iterator it = adjacentNodes.begin();
+                it != adjacentNodes.end(); it++)
+        {
+            Node *p = (*it);
+
+            if ( !mVisited[p->getGridPos().y][p->getGridPos().x] )
+            {
+                mNumNodesOpened++;
+
+                sf::Vector2i pGridPos = p->getGridPos();
+
+                //float distanceToGoal = (float) std::sqrt( std::pow(pGridPos.x - gridPos.x, 2) +
+                        //std::pow(pGridPos.y - gridPos.y, 2) );
+
+                float distanceToGoal = (float) std::abs( (pGridPos.x - gridPos.x) +
+                        (pGridPos.y - gridPos.y) );
+
+                float possiblePathCost = distanceToGoal + (p->getCost() + pe->getPathCost());
+
+                std::deque<Node*>::iterator it = mOpen.end();
+                it = std::find_if(mOpen.begin(), mOpen.end(), 
+                        [&pGridPos](const Node *a) -> bool
+                        {
+                            return a->getGridPos() == pGridPos;
+                        });
+
+                if (it != mOpen.end())
+                {
+                    if (possiblePathCost < (*it)->getPossiblePathCost()) 
+                    {
+                        (*it)->setParent(pe);
+                        (*it)->setPossiblePathCost(possiblePathCost);
+                    }
+                }
+                else
+                {
+                    p->setParent(pe);
+                    p->setPossiblePathCost(possiblePathCost);
+                    mOpen.push_back(p);
+                }
+
+                // To visualize the visited node
+                float blockSize = mMap.getBlockSize();
+
+                sf::RectangleShape n;
+                n.setSize(sf::Vector2f(blockSize, blockSize));
+                n.setPosition(mMap.mGrid[gridPos.y][gridPos.x].getPosition()
+                        + sf::Vector2f(blockSize * mGridSize.y + 42 * mMap.getBlockGap(), 0));
+                n.setFillColor(sf::Color(255,0,0,50));
+                mNodesVisited.push_back(n);
+
+                if (pGridPos == mEndPosition)
+                {
+                    mFoundPath = true;
+                    break;
+                }
+            }
+        }
+
+        std::sort(mOpen.begin(), mOpen.end(),
+                [](const Node *a, const Node *b) -> bool
+                {
+                    return a->getPossiblePathCost() < b->getPossiblePathCost();
+                });
+
+        // This is used so I can draw the nodes while updating. It does not 
+        // belong to the search algorithm but it is a silly hack so I can draw
+        // the nodes visited and make a cool animation of how the algo
+        // works
+        if ( !mOpen.empty() ) {
+            mAnimationTimer.restart();
+            return;
+        }
+    }
+
+    
+    // Move last element
+    if ( !mOpen.empty() )
+    {
+        //mNodesVisited.clear();
+        mPrintedStats = true;
+        std::pair<int, int> stats = makePath();
+        printStatistics("A* Cost", stats.first, stats.second);
+    }
+    
 }
 
 std::pair<int,int> Pathfinder::makePath()

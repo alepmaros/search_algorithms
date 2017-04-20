@@ -49,6 +49,7 @@ void Node::setParent(Node *parent)
     {
         mPathCost = 0;
         mLevel = 0;
+        mPossiblePathCost = 0;
     }
 
     mParent = parent;
@@ -118,4 +119,14 @@ void Node::addAdjacentNode(Node *n)
 void Node::setVisited()
 {
     mWasVisited = true;
+}
+
+float Node::getPossiblePathCost() const
+{
+    return mPossiblePathCost;
+}
+
+void Node::setPossiblePathCost(float g)
+{
+    mPossiblePathCost = g;
 }

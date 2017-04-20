@@ -23,6 +23,10 @@ class Node : public sf::Drawable
 
         int             addPathCost(int cost);
         void            setPathCost(int cost);
+        
+        float           getPossiblePathCost() const;
+        void            setPossiblePathCost(float g);
+        
 
         bool            wasVisited();
         void            setVisited();
@@ -41,6 +45,9 @@ class Node : public sf::Drawable
         int                 mCost;
         int                 mPathCost;
         int                 mLevel;
+
+        // used for A* search
+        float               mPossiblePathCost;
 
         bool                mWasVisited;
 
