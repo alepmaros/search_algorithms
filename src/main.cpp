@@ -54,7 +54,7 @@ int main()
     textFps.setCharacterSize(FONT_SIZE);
     textFps.setPosition(sf::Vector2f(2,0));
 
-    sf::Text textSelectedSearch("Press 1-3 to select Search Algorithm", font);
+    sf::Text textSelectedSearch("Press 1-4 to select Search Algorithm", font);
     textSelectedSearch.setFillColor(sf::Color::White);
     textSelectedSearch.setCharacterSize(FONT_SIZE);
     textSelectedSearch.setPosition(sf::Vector2f(2,22));

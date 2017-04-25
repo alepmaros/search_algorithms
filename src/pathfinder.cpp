@@ -392,11 +392,11 @@ void Pathfinder::AStarSearch()
 
                 sf::Vector2i pGridPos = p->getGridPos();
 
-                //float distanceToGoal = (float) std::sqrt( std::pow(pGridPos.x - gridPos.x, 2) +
-                        //std::pow(pGridPos.y - gridPos.y, 2) );
+                float distanceToGoal = (float) std::sqrt( std::pow(pGridPos.x - mEndPosition.x, 2)
+                        + std::pow(pGridPos.y - mEndPosition.y, 2) );
 
-                float distanceToGoal = (float) std::abs( (pGridPos.x - gridPos.x) +
-                        (pGridPos.y - gridPos.y) );
+                //distanceToGoal = (float) std::abs( (pGridPos.x - mEndPosition.x) +
+                        //(pGridPos.y - mEndPosition.y) );
 
                 float possiblePathCost = distanceToGoal + (p->getCost() + pe->getPathCost());
 
