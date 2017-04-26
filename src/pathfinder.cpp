@@ -395,8 +395,8 @@ void Pathfinder::AStarSearch()
                 float distanceToGoal = (float) std::sqrt( std::pow(pGridPos.x - mEndPosition.x, 2)
                         + std::pow(pGridPos.y - mEndPosition.y, 2) );
 
-                //distanceToGoal = (float) std::abs( (pGridPos.x - mEndPosition.x) +
-                        //(pGridPos.y - mEndPosition.y) );
+                distanceToGoal = (float) std::abs( (pGridPos.x - mEndPosition.x) +
+                        (pGridPos.y - mEndPosition.y) );
 
                 float possiblePathCost = distanceToGoal + (p->getCost() + pe->getPathCost());
 

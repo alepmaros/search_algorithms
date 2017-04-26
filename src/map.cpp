@@ -66,10 +66,10 @@ Map::Map(std::string file, sf::Vector2f offset, float blockSize, float blockGap)
                 n->addAdjacentNode(&mGrid[i-1][j]);
             }
 
-            // West
-            if (j - 1 >= 0)
+            // East
+            if (j+1 < mGridSize.x)
             {
-                n->addAdjacentNode(&mGrid[i][j-1]);
+                n->addAdjacentNode(&mGrid[i][j+1]);
             }
 
             // South
@@ -78,10 +78,10 @@ Map::Map(std::string file, sf::Vector2f offset, float blockSize, float blockGap)
                 n->addAdjacentNode(&mGrid[i+1][j]);
             }
 
-            // East
-            if (j+1 < mGridSize.x)
+            // West
+            if (j - 1 >= 0)
             {
-                n->addAdjacentNode(&mGrid[i][j+1]);
+                n->addAdjacentNode(&mGrid[i][j-1]);
             }
         }
     }
