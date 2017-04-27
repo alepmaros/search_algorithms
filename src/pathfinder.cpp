@@ -398,7 +398,7 @@ void Pathfinder::AStarSearch()
                 distanceToGoal = (float) std::abs( (pGridPos.x - mEndPosition.x) +
                         (pGridPos.y - mEndPosition.y) );
 
-                float possiblePathCost = distanceToGoal + (p->getCost() + pe->getPathCost());
+                float possiblePathCost = (1 * distanceToGoal) + (p->getCost() + pe->getPathCost());
 
                 std::deque<Node*>::iterator it = mOpen.end();
                 it = std::find_if(mOpen.begin(), mOpen.end(), 

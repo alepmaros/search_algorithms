@@ -3,3 +3,10 @@ obj/*
 
 bsearch
 *.swp
+
+*.pdf
+*.aux
+*.bbl
+*.blg
+*.log
+
