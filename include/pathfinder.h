@@ -60,10 +60,6 @@ class Pathfinder
         int                             mMaxLevel;
         bool                            mReachedLevel;
 
-        //std::priority_queue<int,
-            //std::vector<int>,
-            //SortByPath>                 mOpenPriority;
-
         int                             mNumNodesOpened;
         sf::Vector2i                    mStartPosition;
         sf::Vector2i                    mEndPosition;

@@ -50,6 +50,7 @@ void Node::setParent(Node *parent)
         mPathCost = 0;
         mLevel = 0;
         mPossiblePathCost = 0;
+        mWasVisited = false;
     }
 
     mParent = parent;

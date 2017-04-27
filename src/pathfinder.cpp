@@ -117,8 +117,6 @@ void Pathfinder::initializeSearch()
 
     // Add startPosition to node to be visited list
     mOpen.clear();
-    //mOpenPriority.clear();
-
     mOpen.push_back(&mMap.mGrid[mStartPosition.y][mStartPosition.x]);
 
     // Clear visited grid
@@ -131,7 +129,6 @@ void Pathfinder::initializeSearch()
         }
     }
     mOpen.back()->setVisited();
-    
 }
 
 void Pathfinder::printStatistics(std::string searchAlgo, int numCells, int cost)
@@ -392,13 +389,13 @@ void Pathfinder::AStarSearch()
 
                 sf::Vector2i pGridPos = p->getGridPos();
 
-                float distanceToGoal = (float) std::sqrt( std::pow(pGridPos.x - mEndPosition.x, 2)
-                        + std::pow(pGridPos.y - mEndPosition.y, 2) );
-
-                distanceToGoal = (float) std::abs( (pGridPos.x - mEndPosition.x) +
+                // Manhattan Distance
+                float distanceToGoal = (float) std::abs( (pGridPos.x - mEndPosition.x) +
                         (pGridPos.y - mEndPosition.y) );
 
-                float possiblePathCost = (1 * distanceToGoal) + (p->getCost() + pe->getPathCost());
+                float weight = 1;
+
+                float possiblePathCost = (weight * distanceToGoal) + (p->getCost() + pe->getPathCost());
 
                 std::deque<Node*>::iterator it = mOpen.end();
                 it = std::find_if(mOpen.begin(), mOpen.end(), 
