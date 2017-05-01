@@ -13,6 +13,10 @@
 \usepackage{listings}
 \usepackage{float}
 
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{siunitx}
+
 \lstset{
   %frame=top,frame=bottom,
   %basicstyle=\small\normalfont\sffamily,    % the size of the fonts that are used for the code
@@ -86,6 +90,27 @@ Modelo
 \section{Experimentos, resultados e análises}
 
 Experimentos
+
+\begin{table}[h]
+    \caption{Resultados obtidos na execução de 300 pontos aleatórios}\label{tab:tab1}
+    \centering
+    \begin{tabular}{lSSSSSS}
+        \toprule
+        \multirow{2}{*}{Busca} &
+            \multicolumn{2}{c}{Expansão de Nós} &
+            \multicolumn{2}{c}{Custo} \\
+            & {$\bar{x}$} & {$\sigma$} & {$\bar{x}$} & {$\sigma$} \\
+            \midrule
+        Busca em Largura            & 849.24  & 508.25  & 99.89  & 61.37  \\
+        Custo Uniforme              & 1848.30 & 1047.06 & 46.41  & 23.84  \\
+        Aprofundamente Iterativo    & 4040.81 & 5639.77 & 107.77 & 64.31  \\
+        A* ($h(x)$ com peso 1.0)    & 798.53  & 713.67  & 42.37  & 21.56  \\
+        A* ($h(x)$ com peso 1.5)    & 620.85  & 592.47  & 45.67  & 21.51  \\
+        A* ($h(x)$ com peso 3.0)    & 445.23  & 449.39  & 51.87  & 25.11  \\
+        A* ($h(x)$ com peso 5.0)    & 361.74  & 345.95  & 61.22  & 29.64  \\
+        \bottomrule
+  \end{tabular}
+\end{table}
 
 % 5. Conclusão
 %   Considerações sobre o trabalho e sobre os resultados obtidos, trabalhos futuros.

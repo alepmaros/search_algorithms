@@ -8,3 +8,7 @@ Search Algorithms implemented for my IA course using SFML/C++
 - Uniform Cost Search
 - Iterative Deepening Search
 - A*
+
+# Example
+
+![Program Running](/report/figuras/prog1.png)
