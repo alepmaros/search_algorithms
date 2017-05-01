@@ -410,10 +410,10 @@ void Pathfinder::AStarSearch()
                 sf::Vector2i pGridPos = p->getGridPos();
 
                 // Manhattan Distance
-                float distanceToGoal = (float) std::abs( (pGridPos.x - mEndPosition.x) +
-                        (pGridPos.y - mEndPosition.y) );
+                float distanceToGoal = std::abs( (pGridPos.x - mEndPosition.x)) +
+                        std::abs(pGridPos.y - mEndPosition.y);
 
-                float weight = 1;
+                float weight = 1.0;
 
                 float possiblePathCost = (weight * distanceToGoal) + (p->getCost() + pe->getPathCost());
 

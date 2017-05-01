@@ -100,8 +100,8 @@ Map::Map(std::string file, sf::Vector2f offset, float blockSize, float blockGap)
         }
     }
 
-    setStartPosition(16, 9);
-    setEndPosition(13, 17);
+    setStartPosition(3, 3);
+    setEndPosition(30, 30);
 }
 
 void Map::update()

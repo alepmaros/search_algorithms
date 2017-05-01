@@ -17,29 +17,6 @@
 \usepackage{multirow}
 \usepackage{siunitx}
 
-\lstset{
-  %frame=top,frame=bottom,
-  %basicstyle=\small\normalfont\sffamily,    % the size of the fonts that are used for the code
-  stepnumber=1,                           % the step between two line-numbers. If it is 1 each line will be numbered
-  numbersep=10pt,                         % how far the line-numbers are from the code
-  tabsize=2,                              % tab size in blank spaces
-  extendedchars=true,                     %
-  breaklines=true,                        % sets automatic line breaking
-  captionpos=t,                           % sets the caption-position to top
-  mathescape=true,
-  stringstyle=\color{white}\ttfamily, % Farbe der String
-  showspaces=false,           % Leerzeichen anzeigen ?
-  showtabs=false,             % Tabs anzeigen ?
-  %numbers=left,
-  %framexleftmargin=30pt,
-  %framexrightmargin=17pt,
-  %framexbottommargin=5pt,
-  %framextopmargin=5pt,
-  showstringspaces=false      % Leerzeichen in Strings anzeigen ?
- }
-
-\renewcommand\lstlistingname{Lista}
-
 \sloppy
 
 \title{IAR0001 - 2017/1\\Relatório Trabalho 3\\Algoritmos de Busca}
@@ -60,36 +37,221 @@
 %\end{abstract}
      
 \begin{resumo} 
-    Resumo
+    Uma forma de se resolver problemas complexos é modelando-os como um grafo de estados.
+    Após feita esta modelagem, a resolução do problema consiste em apenas percorrer esses
+    estados até encontrar a solução desejada. Infelizmente, fazer uma busca exaustiva é
+    demorada devido a quantidade de possíveis estados, logo torna-se necessário a
+    utilização de algorítimos que realizam essa busca de uma forma inteligente. Neste
+    relatório sera abordado 4 algorítimos de busca analisando um problema de achar
+    um caminho entre 2 pontos em um mapa.
 \end{resumo}
 
 % 1. Introdução
 %   Contextualização do problema, justificativa, objetivos, estrutura do relatório.
 \section{Introdução}
 
-Intro
+Uma forma de se resolver um problema é modelando-o através de um sistema de produção.
+Um sistema de produção consiste em transformar um problema em um grafo de estados. A primeira
+coisa a se fazer é definir o conjunto de possíveis estados, os estados iniciais e finais e
+um conjunto de regras que definem a transição desses possíveis estados.
+
+Com o sistema devidamente modelado, é necessário então percorrer esse grafo de estados em
+busca da solução desejada. Fazer uma busca de todas as possibilidades geralmente não é
+algo possível, já que normalmente o número de possíveis estados de um problema é muito elevado, logo, 
+para fazer essa busca, diferentes estratégias foram elaboradas, sendo
+algumas dessas estratégias a Busca em Largura, Busca de Custo Uniforme, Busca de Aprofundamento
+Iterativo e A*, sendo que cada uma dessas estratégias possuem pontos positivos e negativos.
+
+Este relatório irá abordar essas 4 estratégias de busca, explicando o que cada algorítimo
+faz, quando ele deve ser usado e quais suas características. Os algorítimos serão testados
+em cima de um problema de achar um custo em um mapa dado um ponto inicial e final.
+
+Primeiramente será discutido a problemática, logo em seguida será explicado os algorítimos
+baseado no problema e por fim será feito experimentações com os algorítimos.
 
 % 2. Problemática
 %   Detalhamento do problema, PEAS e características do problema
 \section{Problemática}
 
-Problemática
+O problema consiste em, dado um ambiente, um ponto inicial e um ponto final, achar um
+caminho entre esses dois pontos. Nesse caso específico, o ambiente é uma \textit{grid} de
+42 $\times$ 42 blocos, onde cada bloco possui um custo específico para se mover. O mapa
+utilizado está sendo mostrado na Figura~\ref{fig:mapa} e a Tabela~\ref{tab:custos} mostra
+o custo necessário para passar em cada bloco.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=.6\textwidth]{figuras/ia_mapa}
+    \label{fig:mapa}
+    \caption{Ambiente a ser explorado}
+\end{figure}
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{lS}
+        \toprule
+        Bloco & Custo \\
+        \midrule
+        Sólido e Plano (Verde) & 1 \\
+        Montanhoso (Marrom)    & 5 \\ 
+        Pântano (Azul)         & 10 \\
+        Fogo (Vermelho)        & 15 \\
+        \bottomrule
+    \end{tabular}
+    \caption{Custos de cada bloco do ambiente}
+    \label{tab:custos}
+\end{table}
+
+Para resolver o problema de achar um caminho, o ambiente foi modelado como um grafo. Cada
+posição possui uma lista de adjacência para a posição ao norte, leste, sul e oeste (exatamente
+nessa ordem, já que alguns algorítimos levam isso em consideração), não sendo 
+possível a movimentação na diagonal. Caso o robô esteja na posição
+(0, 0) ele não pode ir para a posição (41, 0), ou seja, o mapa é fechado.
+
+Para fazer a exploração dos nós desse grafo, quatro algorítimos descritos por
+\cite{Russell:2009:AIM:1671238} foram utilizados e serão apresentados na próxima seção.
+
+\section{Algoritmos de Busca}
+
+Há duas categorias de algoritmos de busca: Busca Cega e Busca Heurística. Contrário da busca 
+cega, a busca heurística utiliza mais informações do problema para saber qual é o próximo
+nó que deve ser explorado. Na maioria dos casos, a busca heurística produz um resultado
+melhor e da mesma qualidade que a busca cega, mas nem todo problema pode utilizar essa
+técnica. Nesse caso, o algorítimo de busca heurística sabe a posição final e sabe
+estimar com mais precisão para qual lado deve seguir, entretanto, essa informação
+nem sempre está disponível.
+
+\subsection{Busca em Largura}
+
+A Busca em Largura (Breadth First Search -- BFS) é uma estratégia de busca por níveis da
+árvore, isto é, primeiramente se abre o nó principal, depois todos os nós sucessores do
+nó principal são explorados, depois todos os sucessores do passo anterior e assim por diante.
+Aqui, a verificação do objetivo é feito ao criar o nó a ser expandido e não quando ele é
+selecionado para a expansão. Tal escolha é feito devido a complexidade de tempo.
+A Figura~\ref{fig:bfs_ex} mostra a ordem de expansão de nós.
+
+A Busca em Largura é completa, isto é, caso exista uma solução está será encontrada e é
+ótima caso os nós não possuam pesos, já que o \textit{BFS} não leva em consideração o custo
+dos nós e somente sua posição no nível da árvore. Caso não tenha pesos, a solução será ótima
+pois sempre será encontrar a solução do menor nível da árvore.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\textwidth]{figuras/bfs_ex}
+    \cite{Russell:2009:AIM:1671238}
+    \caption{Exemplo da busca BFS}
+    \label{fig:bfs_ex}
+\end{figure}
+
+\subsection{Busca de Custo Uniforme}
+
+A Busca de Custo Uniforme leva em consideração o custo atual do caminho até o nó raiz e 
+sempre expande o nó com o menor custo. Outra modificação é que a verificação do objetivo
+é feita quando nó é escolhido para ser expandido, dessa forma, garante-se que não há
+nenhum outro caminho com menor custo para chegar até ele. 
+Dessa forma, o caminho passa a ser completo (sempre
+acha um caminho) e ótimo (acha o caminho com o menor custo).
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=.7\textwidth]{figuras/ucs_ex}
+    \cite{Russell:2009:AIM:1671238}
+    \caption{Exemplo da Busca de Custo Uniforme}
+    \label{fig:ucs_ex}
+\end{figure}
+
+Dado a Figura~\ref{fig:ucs_ex}, com o ponto inicial em Sibiu e o final em Bucharest,
+é gerado primeiramente os caminhos entre Fagaras e Rimnicu Vilcea. Como o caminho entre
+Sibiu e Rimnicu Vilcea é menor ele é escolhido para expansão, gerando o caminho entre
+Rimnicu e Pitesti com valor 177 (80 + 97). Logo em seguida, Fagaras é escolhido para expansão
+por possuir o caminho com menor custo (99) e criando o caminho entre Fagaras e Bucharest com
+o valor 310 (99 + 211). Chegamos no objetivo mas o próximo nó a ser expandido é o de Pitesti,
+logo a execução ainda não termina. Pitesti expande para Bucharest com peso 278 (80 + 97 + 101) e
+atualiza o nó pai de Bucharest pois possui um caminho menor. Por fim Bucharest é escolhido para expansão,
+mas como já é o objetivo, o programa acaba com o caminho Sibiu -> Rimnicu -> Pitesti -> Bucharest.
+
+\subsection{Busca com Aprofundamento Iterativo}
+
+Para falar da Busca com Aprofundamento Iterativo é necessário primeiramente entender a
+Busca em Profundidade (Depth First Search -- DFS). Nessa busca, o nó mais a esquerda sempre
+é expandido primeiro, logo, o nível da árvore aumenta a cada nó. Quando não há mais como
+haver a expansão a esquerda, ele volta um nível segue para a próxima expansão.
+
+A Busca com Aprofundamento Iterativo segue o mesmo padrão do DFS, mas estipula um 
+limite máximo de profundidade que a árvore pode atingir. A cada iteração, esse limite
+é incrementado em um. A Figura~\ref{fig:ids_ex} mostra o algoritmo em execução.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=.85\textwidth]{figuras/ids_ex}
+    \cite{Russell:2009:AIM:1671238}
+    \caption{Exemplo da Busca com Aprofundamento Iterativo}
+    \label{fig:ids_ex}
+\end{figure}
+
+O algorítimo é completo e ótimo (quando não há custo diferenciado de nós). Essa busca
+é muito parecido com o BFS, porém a complexidade de memória é menor. BFS usa $O(b^d)$ de
+memória, enquanto o DFS usa $O(d)$, sendo $d$ o nível da árvore e b o fator de ramificação.
+
+\subsection{A*}
+
+O algoritmo A*, diferente dos outros três, é um algoritmo de busca heurística. Essa busca
+utilizado um conhecimento específico do problema para a escolha de expansão de nós. A avaliação
+da escolha do nó é dado pela combinação de duas funções, $g(n)$, o custo do caminho até o nó
+sendo avaliado e $h(n)$, uma estimativa do custo do nó atual até o destino. Por fim, tem-se:
+
+\begin{equation}
+    f(n) = g(n) + h(n)
+\end{equation}
+
+Sempre o nó com o menor $f(n)$ será escolhido para expansão.
+
+Esse algorítimo é completo, isto é, sempre acha a solução. Para ser ótimo a função heurística
+deve seguir duas condições. \textbf{Admissibilidade} e \textbf{consistência}. Uma heurística
+\textbf{admissível} é aquela que nunca superestima o valor do caminho, $f(n)$ nunca pode ser maior
+do que o real caminho. Uma heurística é \textbf{consistente} se, para cada nó $n$ e todos
+os sucessores $n'$ que $n$ gerou com uma ação $a$, o custo estimado para chegar ao
+objetivo por $n$ não é maior que o custo para chegar à $n'$ mais o custo estimado para
+atingir o objetivo pelo nó $n'$.
+
+\begin{equation}
+    h(n) \leq c(n, a, n') + h(n')
+\end{equation}
+
+A função heurística é calculado a partir da distância de Manhattan:
+
+\begin{equation}
+    h(n) = | n_x - O_x | + | n_y - O_y |
+\end{equation}
+
+Onde $n$ é o nó sendo analisado e $O$ o objetivo.
+Se essas duas condições forem atingidas, o algorítimo vai ser ótimo. Nesse problema,
+garante-se a admissibilidade e a consistência da seguinte forma: Primeiro calcula-se a distancia
+do nó $n$ até o objetivo $O$, como é a distância de Manhattan ele dá a distância mínima de blocos
+necessários para chegar ao objetivo e para cada bloco desse é atribuído o menor custo possível
+de um bloco (um), nunca superestimando a distância.
+
+Entretanto,
+pode-se modificar a função heurística $h(n)$ atribuindo pesos maiores. Dessa forma,
+o resultado não vai ser ótimo, mas ele expandirá menos nós e chegará a um resultado
+mais rápido. A experimentação dessa mudança é discutida mais a fundo na próxima seção.
 
 % 3. Modelo implementado
 %   Estratégias utilizadas, fórmulas, definições de implementação, linguagem
-\section{Modelo implementado}
+\section{Modelo implementado, experimentos e análises}
 
 O trabalho foi implementado utilizando a linguagem C++ e a biblioteca gráfica
-SFML (\textit{Simple and Fast Multimedia Library}).
+SFML (\textit{Simple and Fast Multimedia Library}). A Figura~\ref{fig:prog2} 
+mostra a execução do algoritmo A* com o ponto inicial (3,3) e o ponto final em
+(30,30). O vermelho representa os nós que foram sendo expandidos. Quanto mais escuro,
+mais vezes eles foram atualizados.
 
-Modelo
-
-% 4. Experimentos, resultados e análises
-%   Detalhamento de como os experimentos foram conduzidos (variações do raio, definições do número de itens e tamanho da matriz, quantidade de agentes, número de iterações)
-%   Mostrar e analisar os resultados (tabelas, figuras, gráficos).
-\section{Experimentos, resultados e análises}
-
-Experimentos
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\textwidth]{figuras/prog2}
+    \caption{Exemplo da execução do Algoritmo A*}
+    \label{fig:prog2}
+\end{figure}
 
 \begin{table}[h]
     \caption{Resultados obtidos na execução de 300 pontos aleatórios}\label{tab:tab1}
@@ -116,7 +278,9 @@ Experimentos
 %   Considerações sobre o trabalho e sobre os resultados obtidos, trabalhos futuros.
 \section{Conclusão}
 
-Conclusão
+Procurar uma solução em um problema é uma tarefa bastante custosa e toda abordagem para
+reduzir essa busca deve ser explorada antes de procurar uma solução para encontrar a que melhor
+se encaixa na proposta de solução.
 
 \bibliographystyle{sbc}
 \bibliography{sbc-template}
