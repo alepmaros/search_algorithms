@@ -16,6 +16,7 @@
 \usepackage{booktabs}
 \usepackage{multirow}
 \usepackage{siunitx}
+\usepackage[export]{adjustbox}
 
 \sloppy
 
@@ -194,6 +195,7 @@ O algorítimo é completo e ótimo (quando não há custo diferenciado de nós). Essa 
 memória, enquanto o DFS usa $O(d)$, sendo $d$ o nível da árvore e b o fator de ramificação.
 
 \subsection{A*}
+\label{sec:astar}
 
 O algoritmo A*, diferente dos outros três, é um algoritmo de busca heurística. Essa busca
 utilizado um conhecimento específico do problema para a escolha de expansão de nós. A avaliação
@@ -246,6 +248,15 @@ mostra a execução do algoritmo A* com o ponto inicial (3,3) e o ponto final em
 (30,30). O vermelho representa os nós que foram sendo expandidos. Quanto mais escuro,
 mais vezes eles foram atualizados.
 
+Os testes foram executados da seguinte maneira: 300 pares de pontos (pontos inicias e finais)
+aleatórios foram gerados e para esses 300 pontos todos os algorítimos foram executados, guardando
+a quantidade de nós abertos e o custo do caminho em cada execução.
+
+Para o algoritmo A* foram feitos experimentações com o peso da função heurística. Como discutido
+na seção~\ref{sec:astar}, quando atribuído um peso para essa função o resultado deixa de ser ótimo
+e passa a abrir menos nós pois se aproxima mais de um algorítimo guloso. Foram testados quatro
+diferentes pesos, 1 (sem superestimativa, resultado ótimo), 1.5, 3 e 5.
+
 \begin{figure}[h]
     \centering
     \includegraphics[width=1\textwidth]{figuras/prog2}
@@ -263,16 +274,50 @@ mais vezes eles foram atualizados.
             \multicolumn{2}{c}{Custo} \\
             & {$\bar{x}$} & {$\sigma$} & {$\bar{x}$} & {$\sigma$} \\
             \midrule
-        Busca em Largura            & 849.24  & 508.25  & 99.89  & 61.37  \\
-        Custo Uniforme              & 1848.30 & 1047.06 & 46.41  & 23.84  \\
-        Aprofundamente Iterativo    & 4040.81 & 5639.77 & 107.77 & 64.31  \\
-        A* ($h(x)$ com peso 1.0)    & 798.53  & 713.67  & 42.37  & 21.56  \\
-        A* ($h(x)$ com peso 1.5)    & 620.85  & 592.47  & 45.67  & 21.51  \\
-        A* ($h(x)$ com peso 3.0)    & 445.23  & 449.39  & 51.87  & 25.11  \\
-        A* ($h(x)$ com peso 5.0)    & 361.74  & 345.95  & 61.22  & 29.64  \\
+        Busca em Largura            & 856.73  & 504.35  & 98.50  & 58.78  \\
+        Custo Uniforme              & 858.63  & 518.85  & 42.03  & 21.38  \\
+        Aprofundamente Iterativo    & 3843.34 & 5011.21 & 98.50  & 58.78  \\
+        A* ($h(x)$ com peso 1.0)    & 197.04  & 272.72  & 42.03  & 21.38  \\
+        A* ($h(x)$ com peso 1.5)    & 107.03  & 207.14  & 43.10  & 22.23  \\
+        A* ($h(x)$ com peso 3.0)    & 47.42   & 72.49   & 48.46  & 24.76  \\
+        A* ($h(x)$ com peso 5.0)    & 33.92   & 35.53   & 57.85  & 31.15  \\
         \bottomrule
   \end{tabular}
 \end{table}
+
+A tabela~\ref{tab:tab1} mostra a média e o desvio padrão para o número de nós abertos (expandidos) e
+o custo do caminho. Inicialmente, vemos que os dois algoritmos ótimos, estes sendo o Custo Uniforme e
+o A* sem superestimativa (peso 1.0) possuem os mesmos valores para o custo do caminho. O Algorítimo
+de Custo Uniforme abriu aproximadamente 4 vezes mais nós que o A*, sendo muito mais custoso.
+
+A Busca em Largura e o Aprofundamento Iterativo também possuem os mesmos valores para o custo do
+caminho, já que ambos se assemelham e ambos acham o caminho do menor nível da árvore. Não é o caminho
+ótimo nesse problema pois os nós possuem custos próprios. O Aprofundamento Iterativo abriu aproximadamente
+5 vezes mais nós que a Busca em Largura devido as $n$ iterações do algoritmo. Novamente, o ponto forte
+da busca com Aprofundamento Iterativo é a complexidade de memória, que é menor que o BFS.
+
+Quanto ao A*, conforme o peso da função heurística foi aumentando, também aumentou-se o custo médio
+do caminho, entretanto, o número de nós aberto diminuiu drasticamente. Isso ocorre devido ao comportamento
+guloso que o algoritmo passa a ter conforme o aumento do peso.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\textwidth]{figuras/plot1}
+    \caption{Gráficos dos Testes}
+    \label{fig:plot1}
+\end{figure}
+
+A Figura~\ref{fig:plot1} mostra 3 gráficos. O primeiro mostra a relação entre a média
+do custo dos caminhos e os nós abertos.
+
+// Falar do máximo do astar peso 1 no meio do fogo
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=.85\textwidth]{figuras/plot2}
+    \caption{Gráficos dos Testes}
+    \label{fig:plot2}
+\end{figure}
 
 % 5. Conclusão
 %   Considerações sobre o trabalho e sobre os resultados obtidos, trabalhos futuros.
