@@ -40,11 +40,11 @@
 \begin{resumo} 
     Uma forma de se resolver problemas complexos é modelando-os como um grafo de estados.
     Após feita esta modelagem, a resolução do problema consiste em apenas percorrer esses
-    estados até encontrar a solução desejada. Infelizmente, fazer uma busca exaustiva é
+    estados até encontrar a solução desejada. Entretanto, fazer uma busca exaustiva é
     demorada devido a quantidade de possíveis estados, logo torna-se necessário a
     utilização de algorítimos que realizam essa busca de uma forma inteligente. Neste
-    relatório sera abordado 4 algorítimos de busca analisando um problema de achar
-    um caminho entre 2 pontos em um mapa.
+    relatório sera abordado quatro algorítimos de busca analisando um problema de achar
+    um caminho entre dois pontos em um mapa.
 \end{resumo}
 
 % 1. Introdução
@@ -56,16 +56,16 @@ Um sistema de produção consiste em transformar um problema em um grafo de estado
 coisa a se fazer é definir o conjunto de possíveis estados, os estados iniciais e finais e
 um conjunto de regras que definem a transição desses possíveis estados.
 
-Com o sistema devidamente modelado, é necessário então percorrer esse grafo de estados em
+Com o sistema devidamente modelado, é então necessário percorrer esse grafo de estados em
 busca da solução desejada. Fazer uma busca de todas as possibilidades geralmente não é
 algo possível, já que normalmente o número de possíveis estados de um problema é muito elevado, logo, 
-para fazer essa busca, diferentes estratégias foram elaboradas, sendo
-algumas dessas estratégias a Busca em Largura, Busca de Custo Uniforme, Busca de Aprofundamento
+para fazer essa busca diferentes estratégias foram elaboradas, como
+a Busca em Largura, Busca de Custo Uniforme, Busca de Aprofundamento
 Iterativo e A*, sendo que cada uma dessas estratégias possuem pontos positivos e negativos.
 
-Este relatório irá abordar essas 4 estratégias de busca, explicando o que cada algorítimo
+Este relatório irá abordar essas quatro estratégias de busca, explicando o que cada algoritmo
 faz, quando ele deve ser usado e quais suas características. Os algorítimos serão testados
-em cima de um problema de achar um custo em um mapa dado um ponto inicial e final.
+em cima de um problema de achar um custo de um caminho em um mapa dado um ponto inicial e final.
 
 Primeiramente será discutido a problemática, logo em seguida será explicado os algorítimos
 baseado no problema e por fim será feito experimentações com os algorítimos.
@@ -82,7 +82,7 @@ o custo necessário para passar em cada bloco.
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=.6\textwidth]{figuras/ia_mapa}
+    \includegraphics[width=.7\textwidth]{figuras/ia_mapa}
     \label{fig:mapa}
     \caption{Ambiente a ser explorado}
 \end{figure}
@@ -139,8 +139,7 @@ pois sempre será encontrar a solução do menor nível da árvore.
 \begin{figure}[h]
     \centering
     \includegraphics[width=1\textwidth]{figuras/bfs_ex}
-    \cite{Russell:2009:AIM:1671238}
-    \caption{Exemplo da busca BFS}
+    \caption{Exemplo da busca BFS. Fonte: Extraído de \cite{Russell:2009:AIM:1671238}}
     \label{fig:bfs_ex}
 \end{figure}
 
@@ -156,8 +155,7 @@ acha um caminho) e ótimo (acha o caminho com o menor custo).
 \begin{figure}[h]
     \centering
     \includegraphics[width=.7\textwidth]{figuras/ucs_ex}
-    \cite{Russell:2009:AIM:1671238}
-    \caption{Exemplo da Busca de Custo Uniforme}
+    \caption{Exemplo da Busca de Custo Uniforme. Fonte: Extraído de \cite{Russell:2009:AIM:1671238}}
     \label{fig:ucs_ex}
 \end{figure}
 
@@ -185,8 +183,8 @@ limite máximo de profundidade que a árvore pode atingir. A cada iteração, esse l
 \begin{figure}[h]
     \centering
     \includegraphics[width=.85\textwidth]{figuras/ids_ex}
-    \cite{Russell:2009:AIM:1671238}
-    \caption{Exemplo da Busca com Aprofundamento Iterativo}
+    
+    \caption{Exemplo da Busca com Aprofundamento Iterativo. Fonte: Extraído de \cite{Russell:2009:AIM:1671238}}
     \label{fig:ids_ex}
 \end{figure}
 
@@ -244,13 +242,14 @@ mais rápido. A experimentação dessa mudança é discutida mais a fundo na próxima 
 
 O trabalho foi implementado utilizando a linguagem C++ e a biblioteca gráfica
 SFML (\textit{Simple and Fast Multimedia Library}). A Figura~\ref{fig:prog2} 
-mostra a execução do algoritmo A* com o ponto inicial (3,3) e o ponto final em
-(30,30). O vermelho representa os nós que foram sendo expandidos. Quanto mais escuro,
+mostra a execução do algoritmo A* com o ponto inicial (3, 3) e o ponto final em
+(30, 30). O vermelho representa os nós que foram sendo expandidos. Quanto mais escuro,
 mais vezes eles foram atualizados.
 
 Os testes foram executados da seguinte maneira: 300 pares de pontos (pontos inicias e finais)
 aleatórios foram gerados e para esses 300 pontos todos os algorítimos foram executados, guardando
-a quantidade de nós abertos e o custo do caminho em cada execução.
+a quantidade de nós abertos e o custo do caminho em cada execução. Informações como média,
+mediana e desvio padrão foram calculadas a partir desses dados para análise posterior.
 
 Para o algoritmo A* foram feitos experimentações com o peso da função heurística. Como discutido
 na seção~\ref{sec:astar}, quando atribuído um peso para essa função o resultado deixa de ser ótimo
@@ -276,7 +275,7 @@ diferentes pesos, 1 (sem superestimativa, resultado ótimo), 1.5, 3 e 5.
             \midrule
         Busca em Largura            & 856.73  & 504.35  & 98.50  & 58.78  \\
         Custo Uniforme              & 858.63  & 518.85  & 42.03  & 21.38  \\
-        Aprofundamente Iterativo    & 3843.34 & 5011.21 & 98.50  & 58.78  \\
+        Aprofundamento Iterativo    & 3843.34 & 5011.21 & 98.50  & 58.78  \\
         A* ($h(x)$ com peso 1.0)    & 197.04  & 272.72  & 42.03  & 21.38  \\
         A* ($h(x)$ com peso 1.5)    & 107.03  & 207.14  & 43.10  & 22.23  \\
         A* ($h(x)$ com peso 3.0)    & 47.42   & 72.49   & 48.46  & 24.76  \\
@@ -308,13 +307,27 @@ guloso que o algoritmo passa a ter conforme o aumento do peso.
 \end{figure}
 
 A Figura~\ref{fig:plot1} mostra 3 gráficos. O primeiro mostra a relação entre a média
-do custo dos caminhos e os nós abertos.
+do custo dos caminhos e os nós abertos e os dois abaixo mostram o Box plot da quantidade
+de Nós Aberto e do Custo do Caminho respectivamente. Em relação ao primeiro gráfico, os
+algoritmos que estão mais próximos da origem são os melhores. O A* com os 3 pesos iniciais
+são os melhores, e a escolha de qual peso utilizar vai depender do que se deseja priorizar:
+custo do caminho ou abertura de nós. A busca de Custo Uniforme, embora tenha produza o caminho
+ótimo perde no quesito nós abertos para o A*, logo não deve ser considerado.
 
-// Falar do máximo do astar peso 1 no meio do fogo
+No Box plot de Nós Abertos, vemos que, estatisticamente o Custo Uniforme e o BFS são
+muito parecidos. Também observa-se que a quantidade de nós abertos no A* cai drasticamente
+conforme o peso da função heurística aumenta. Tal fato pode ser analisado com mais detalhes
+na figura~\ref{fig:plot2}.
+
+Já no Box plot do Custo do Caminho percebe-se
+que estatisticamente os 3 primeiros testes do A* são bastantes similares. Em aplicações
+em que o custo do caminho não é essencial e como o número
+de nós cai mais drasticamente em relação ao custo do caminho, talvez seria interessante utilizar
+um maior peso para o cálculo do caminho.
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=.85\textwidth]{figuras/plot2}
+    \includegraphics[width=.8\textwidth]{figuras/plot2}
     \caption{Gráficos dos Testes}
     \label{fig:plot2}
 \end{figure}
@@ -324,8 +337,39 @@ do custo dos caminhos e os nós abertos.
 \section{Conclusão}
 
 Procurar uma solução em um problema é uma tarefa bastante custosa e toda abordagem para
-reduzir essa busca deve ser explorada antes de procurar uma solução para encontrar a que melhor
-se encaixa na proposta de solução.
+reduzir essa busca deve ser explorada antes de efetivamente modelar o problema.
+
+A escolha do algoritmo de busca depende principalmente do que você quer priorizar, logo uma 
+analise detalhada do problema é de extrema importância para se chegar a um resultado
+desejado. Os algoritmos estudados podem ser resumidos na tabela~\ref{tab:tab2}. A Busca
+heurística apresentou um resultado muito melhor aos demais algoritmos, entretanto não
+é todos os problemas que podem fazer uso desses métodos.
+
+No algorítimo atual, não há espaços que não são atingíveis, logo, um possível
+experimento para ser realizado futuramente é adicionar barreiras na qual não é possível
+movimentar-se. É possível que o comportamento de algum dos algoritmos se altere quando
+adicionada essa mudança.
+
+
+
+\begin{table}[h]
+    \caption{Resultados obtidos na execução de 300 pontos aleatórios}\label{tab:tab2}
+    \centering
+    \begin{tabular}{llll}
+        \toprule
+        Busca & Ótimo & Completo & Observações \\
+            \midrule
+        Busca em Largura            & Não & Sim & --    \\
+        Custo Uniforme              & Sim & Sim & Útil quando não se conhece o destino    \\
+        Aprofundamento Iterativo    & Não & Sim & Baixo uso de memória    \\
+        A* ($h(x)$ com peso 1.0)    & Sim & Sim & --  \\
+        A* ($h(x)$ com peso 1.5)    & Não & Sim & Superestimativa gera menos nós \\
+        A* ($h(x)$ com peso 3.0)    & Não & Sim & Superestimativa gera menos nós \\
+        A* ($h(x)$ com peso 5.0)    & Não & Sim & Superestimativa gera menos nós \\
+        \bottomrule
+  \end{tabular}
+\end{table}
+
 
 \bibliographystyle{sbc}
 \bibliography{sbc-template}
