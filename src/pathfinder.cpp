@@ -235,6 +235,7 @@ void Pathfinder::uniformCostSearch()
 
         sf::Vector2i gridPos = pe->getGridPos();
         mVisited[gridPos.y][gridPos.x] = true;
+        mNumNodesOpened++;
 
         if (pe->getGridPos() == mEndPosition)
         {
@@ -249,7 +250,6 @@ void Pathfinder::uniformCostSearch()
             Node *p = (*it);
             if ( !mVisited[p->getGridPos().y][p->getGridPos().x] )
             {
-                mNumNodesOpened++;
 
                 sf::Vector2i pGridPos = p->getGridPos();
 
@@ -393,6 +393,7 @@ void Pathfinder::AStarSearch()
     {
         Node *pe = mOpen.front();
         mOpen.pop_front();
+        mNumNodesOpened++;
 
         sf::Vector2i gridPos = pe->getGridPos();
         mVisited[gridPos.y][gridPos.x] = true;
@@ -405,7 +406,6 @@ void Pathfinder::AStarSearch()
 
             if ( !mVisited[p->getGridPos().y][p->getGridPos().x] )
             {
-                mNumNodesOpened++;
 
                 sf::Vector2i pGridPos = p->getGridPos();
 
