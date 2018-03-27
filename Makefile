@@ -1,5 +1,5 @@
 CC=g++
-CFLAGS=-lsfml-graphics -lsfml-window -lsfml-system -I $(IDIR) -g -Wall
+CFLAGS=-lsfml-graphics -lsfml-window -lsfml-system -I $(IDIR) -g -Wall -std=c++11
 
 IDIR = include
 ODIR = obj
